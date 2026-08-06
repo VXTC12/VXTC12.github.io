@@ -70,7 +70,7 @@ function SiteApp({ session, onSignOut }) {
         onNavigate={navigate}
         data={data}
         onImport={setData}
-        userEmail={session.user.email}
+        user={session.user}
         syncStatus={syncStatus}
         onSignOut={onSignOut}
       />

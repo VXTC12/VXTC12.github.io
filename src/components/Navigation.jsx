@@ -5,13 +5,13 @@ import {
   Home,
   ListChecks,
   LoaderCircle,
-  LogOut,
   MessageCircleHeart,
   NotebookTabs,
   Cloud,
   CloudOff,
 } from 'lucide-react'
 import { siteConfig } from '../data/siteConfig'
+import AccountMenu from './AccountMenu'
 import BackupControls from './BackupControls'
 
 const navigationItems = [
@@ -24,7 +24,7 @@ const navigationItems = [
   { id: 'messages', label: '留言', icon: MessageCircleHeart },
 ]
 
-export default function Navigation({ activePage, onNavigate, data, onImport, userEmail, syncStatus, onSignOut }) {
+export default function Navigation({ activePage, onNavigate, data, onImport, user, syncStatus, onSignOut }) {
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
 
@@ -53,9 +53,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
             <SyncIcon className={syncStatus === 'saving' || syncStatus === 'loading' ? 'spin' : ''} size={16} />
             <span>{syncLabel}</span>
           </span>
-          <button type="button" className="text-button logout-button" onClick={onSignOut} title={`退出 ${userEmail ?? ''}`} aria-label="退出登录">
-            <LogOut size={17} /><span>退出</span>
-          </button>
+          <AccountMenu user={user} onSignOut={onSignOut} />
         </div>
       </header>
 

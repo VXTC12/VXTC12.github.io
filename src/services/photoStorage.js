@@ -39,3 +39,24 @@ export async function uploadHeroPhoto(file) {
 
   return { path, url: await signedPhotoUrl(path) }
 }
+
+export async function uploadAccountAvatar(file, userId) {
+  validatePhoto(file)
+  if (!supabase || !userId) throw new Error('头像空间还没有连接成功。')
+
+  const path = `avatars/${userId}/${crypto.randomUUID()}.${extensionFor(file)}`
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
+    contentType: file.type,
+    cacheControl: '3600',
+    upsert: false,
+  })
+  if (error) throw error
+
+  return { path, url: await signedPhotoUrl(path) }
+}
+
+export async function removePhoto(path) {
+  if (!path || !supabase) return
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).remove([path])
+  if (error) throw error
+}
