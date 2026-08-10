@@ -9,6 +9,7 @@ import {
   stopSharingLocation,
 } from '../services/coupleLocation'
 import InlineEditableText from './InlineEditableText'
+import CoupleLocationMap from './CoupleLocationMap'
 
 export default function CoupleDistanceCard({ user, pageText, editing = false, onTextChange }) {
   const [locations, setLocations] = useState([])
@@ -86,6 +87,13 @@ export default function CoupleDistanceCard({ user, pageText, editing = false, on
         <strong>{loading ? '正在读取…' : formatDistance(distance)}</strong>
         <span>{distance !== null ? '这是两点之间的直线距离，实际路程会更长。' : '请分别登录两个账号并点击“共享我的位置”。'}</span>
       </div>
+
+      <CoupleLocationMap
+        myLocation={myLocation}
+        partnerLocation={partnerLocation}
+        distance={distance}
+        distanceLabel={formatDistance(distance)}
+      />
 
       <div className="location-status-grid">
         <article className={myLocation ? 'is-shared' : ''}>

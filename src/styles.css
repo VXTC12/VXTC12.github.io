@@ -284,6 +284,30 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .distance-card__result small { color: var(--rose-dark); font-size: 12px; font-weight: 800; }
 .distance-card__result strong { margin: 7px 0; color: var(--coffee); font-family: Georgia,"STKaiti",serif; font-size: clamp(34px,7vw,56px); line-height: 1.1; }
 .distance-card__result span { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.couple-map-shell { position: relative; z-index: 1; isolation: isolate; margin: 0 0 18px; overflow: hidden; border: 1px solid rgba(94,68,56,.13); border-radius: 22px; background: #eeeae5; box-shadow: inset 0 0 0 1px rgba(255,255,255,.5); }
+.couple-map { z-index: 0; width: 100%; height: clamp(360px,54vw,490px); background: #eeeae5; font-family: inherit; }
+.couple-map-placeholder { position: relative; z-index: 1; display: grid; justify-items: center; gap: 8px; margin: 0 0 18px; padding: 42px 20px; border: 1px dashed rgba(185,101,112,.32); border-radius: 22px; background: rgba(255,250,242,.68); color: var(--muted); text-align: center; }
+.couple-map-placeholder svg { color: var(--rose); }
+.couple-map-placeholder strong { color: var(--coffee); font-size: 14px; }
+.couple-map-placeholder span { max-width: 390px; font-size: 11px; line-height: 1.65; }
+.couple-map-fit { position: absolute; z-index: 900; top: 13px; left: 13px; display: flex; align-items: center; gap: 6px; padding: 9px 12px; border: 1px solid rgba(94,68,56,.14); border-radius: 999px; background: rgba(255,250,242,.94); color: var(--coffee); box-shadow: 0 5px 18px rgba(94,68,56,.16); font: inherit; font-size: 11px; font-weight: 800; backdrop-filter: blur(8px); }
+.couple-map-fit:active { transform: scale(.97); }
+.couple-map-tip { position: absolute; z-index: 850; right: 10px; bottom: 8px; margin: 0; padding: 6px 9px; border-radius: 999px; background: rgba(255,250,242,.82); color: var(--muted); font-size: 9px; line-height: 1; pointer-events: none; backdrop-filter: blur(5px); }
+.couple-map .leaflet-bar { overflow: hidden; border: 0; border-radius: 12px; box-shadow: 0 5px 18px rgba(94,68,56,.18); }
+.couple-map .leaflet-bar a { border-color: rgba(94,68,56,.1); background: rgba(255,250,242,.95); color: var(--coffee); }
+.couple-map .leaflet-control-attribution { max-width: 72%; background: rgba(255,250,242,.72); color: #765f54; font-size: 8px; }
+.couple-map .leaflet-control-attribution a { color: #8f5c61; }
+.couple-map .leaflet-control-scale-line { border-color: #765f54; background: rgba(255,250,242,.72); color: #5e4438; font-size: 8px; }
+.couple-map-person-icon, .couple-map-distance-icon { border: 0; background: transparent; }
+.couple-map-marker { position: relative; display: grid; justify-items: center; width: 96px; transform: translateY(-10px); filter: drop-shadow(0 7px 7px rgba(74,50,41,.22)); }
+.couple-map-marker__avatar { width: 58px; height: 58px; display: grid; place-items: center; overflow: hidden; border: 4px solid #fffaf2; border-radius: 50%; background: #c06b77; color: #fff; font-size: 21px; font-weight: 900; }
+.couple-map-marker--partner .couple-map-marker__avatar { background: #8f745f; }
+.couple-map-marker__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.couple-map-marker::after { width: 9px; height: 9px; margin-top: -2px; border: 3px solid #fffaf2; border-radius: 50%; background: #c06b77; content: ""; }
+.couple-map-marker--partner::after { background: #8f745f; }
+.couple-map-marker b { max-width: 94px; margin-top: 2px; padding: 4px 8px; overflow: hidden; border-radius: 999px; background: rgba(255,250,242,.94); color: #513a31; font-size: 10px; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+.couple-map-distance-icon { display: grid; place-items: center; }
+.couple-map-distance-icon span { display: block; min-width: 72px; padding: 7px 12px; border: 3px solid rgba(255,250,242,.9); border-radius: 999px; background: #5e4438; color: #fffaf2; box-shadow: 0 4px 12px rgba(74,50,41,.22); font-size: 11px; font-weight: 900; text-align: center; white-space: nowrap; }
 .location-status-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
 .location-status-grid article { min-width: 0; display: grid; gap: 5px; padding: 15px; border: 1px solid rgba(94,68,56,.09); border-radius: 16px; background: rgba(255,250,242,.72); }
 .location-status-grid article.is-shared { border-color: rgba(111,129,103,.28); background: rgba(235,240,229,.78); }
@@ -648,6 +672,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .distance-card__icon { width: 45px; height: 45px; border-radius: 14px; }
   .distance-card__heading h2 { font-size: 25px; }
   .distance-card__result { margin: 18px 0 12px; padding: 20px 10px; }
+  .couple-map, .couple-map-placeholder { min-height: 390px; }
+  .couple-map-tip { right: auto; bottom: 6px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+  .couple-map-fit { top: 10px; left: 10px; }
   .location-status-grid { grid-template-columns: 1fr; gap: 8px; }
   .distance-card__actions { display: grid; grid-template-columns: 1fr 1fr; }
   .distance-card__actions .button { width: 100%; padding-inline: 8px; font-size: 12px; }

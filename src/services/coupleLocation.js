@@ -53,6 +53,7 @@ export async function shareMyLocation(user) {
     accuracy: Math.round(position.coords.accuracy || 0),
     shared_at: sharedAt,
     display_name: displayName(user),
+    avatar_path: user?.user_metadata?.avatar_path ?? '',
   }
 
   const { error } = await supabase.from('site_data').upsert({
