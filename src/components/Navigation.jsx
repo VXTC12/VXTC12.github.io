@@ -10,7 +10,6 @@ import {
   Cloud,
   CloudOff,
 } from 'lucide-react'
-import { siteConfig } from '../data/siteConfig'
 import AccountMenu from './AccountMenu'
 import BackupControls from './BackupControls'
 
@@ -24,7 +23,7 @@ const navigationItems = [
   { id: 'messages', label: '留言', icon: MessageCircleHeart },
 ]
 
-export default function Navigation({ activePage, onNavigate, data, onImport, user, syncStatus, onSignOut }) {
+export default function Navigation({ activePage, onNavigate, data, onImport, user, siteSettings, syncStatus, onOpenAdmin, onSignOut }) {
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
 
@@ -33,7 +32,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
       <header className="site-header">
         <button type="button" className="brand" onClick={() => onNavigate('home')}>
           <span className="brand-mark"><Heart size={18} fill="currentColor" /></span>
-          <span>{siteConfig.siteName}</span>
+          <span>{siteSettings.siteName}</span>
         </button>
         <nav className="desktop-nav" aria-label="主要导航">
           {navigationItems.map(({ id, label }) => (
@@ -53,7 +52,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
             <SyncIcon className={syncStatus === 'saving' || syncStatus === 'loading' ? 'spin' : ''} size={16} />
             <span>{syncLabel}</span>
           </span>
-          <AccountMenu user={user} onSignOut={onSignOut} />
+          <AccountMenu user={user} onOpenAdmin={onOpenAdmin} onSignOut={onSignOut} />
         </div>
       </header>
 

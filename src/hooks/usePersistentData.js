@@ -10,10 +10,57 @@ function isValidSiteData(value) {
   return value && REQUIRED_SECTIONS.every((section) => Array.isArray(value[section]))
 }
 
+function relationshipDateFrom(anniversaries) {
+  const anniversary = anniversaries?.find((item) => (
+    item.id === 'anniversary-1'
+    || item.title === '纪念日'
+    || item.title?.includes('恋爱')
+  ))
+  return anniversary?.date
+}
+
+export function normalizeSiteData(value) {
+  const defaults = createInitialData()
+  if (!isValidSiteData(value)) return defaults
+
+  const savedSettings = value.siteSettings ?? {}
+  const savedCouple = savedSettings.couple ?? {}
+  const savedHome = savedSettings.home ?? {}
+  const relationshipStart = savedCouple.relationshipStart
+    || relationshipDateFrom(value.anniversaries)
+    || defaults.siteSettings.couple.relationshipStart
+
+  return {
+    ...defaults,
+    ...value,
+    siteSettings: {
+      ...defaults.siteSettings,
+      ...savedSettings,
+      couple: {
+        ...defaults.siteSettings.couple,
+        ...savedCouple,
+        relationshipStart,
+        personOne: {
+          ...defaults.siteSettings.couple.personOne,
+          ...(savedCouple.personOne ?? {}),
+        },
+        personTwo: {
+          ...defaults.siteSettings.couple.personTwo,
+          ...(savedCouple.personTwo ?? {}),
+        },
+      },
+      home: {
+        ...defaults.siteSettings.home,
+        ...savedHome,
+      },
+    },
+  }
+}
+
 function loadData() {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY)
-    return saved ? JSON.parse(saved) : createInitialData()
+    return saved ? normalizeSiteData(JSON.parse(saved)) : createInitialData()
   } catch {
     return createInitialData()
   }
@@ -46,7 +93,7 @@ export function usePersistentData(userId) {
       if (error) throw error
 
       if (row?.content && isValidSiteData(row.content)) {
-        if (active) setData(row.content)
+        if (active) setData(normalizeSiteData(row.content))
       } else {
         const localData = loadData()
         const { error: insertError } = await supabase.from('site_data').upsert({

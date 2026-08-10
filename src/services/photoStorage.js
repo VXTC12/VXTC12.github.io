@@ -4,7 +4,7 @@ import { createId } from '../utils/id'
 export const PHOTO_BUCKET = 'couple-photos'
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024
 
-function validatePhoto(file) {
+export function validatePhoto(file) {
   if (!file?.type.startsWith('image/')) throw new Error('请选择 JPG、PNG、WebP 等图片文件。')
   if (file.size > MAX_PHOTO_BYTES) throw new Error('图片不能超过 8MB，请压缩后再上传。')
 }
@@ -46,6 +46,21 @@ export async function uploadAccountAvatar(file, userId) {
   if (!supabase || !userId) throw new Error('头像空间还没有连接成功。')
 
   const path = `avatars/${userId}/${createId('avatar')}.${extensionFor(file)}`
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
+    contentType: file.type,
+    cacheControl: '3600',
+    upsert: false,
+  })
+  if (error) throw error
+
+  return { path, url: await signedPhotoUrl(path) }
+}
+
+export async function uploadSiteAvatar(file, slot) {
+  validatePhoto(file)
+  if (!supabase) throw new Error('照片空间还没有连接成功。')
+
+  const path = `site-avatars/${slot}/${createId('avatar')}.${extensionFor(file)}`
   const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
     contentType: file.type,
     cacheControl: '3600',

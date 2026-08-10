@@ -6,10 +6,10 @@ import { siteConfig } from '../data/siteConfig'
 import { countdownLabel, daysUntil, formatDate, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
 
-function MessageForm({ onSave, onClose }) {
+function MessageForm({ couple, onSave, onClose }) {
   const [form, setForm] = useState({
     kind: 'message',
-    author: siteConfig.couple.personOne.name,
+    author: couple.personOne.name,
     date: todayInputValue(),
     title: '',
     content: '',
@@ -29,8 +29,8 @@ function MessageForm({ onSave, onClose }) {
         <button type="button" className={form.kind === 'letter' ? 'active' : ''} onClick={() => setForm({ ...form, kind: 'letter' })}><Mail size={17} /> 未来信箱</button>
       </div>
       <label>留言人<select name="author" value={form.author} onChange={update}>
-        <option>{siteConfig.couple.personOne.name}</option>
-        <option>{siteConfig.couple.personTwo.name}</option>
+        <option>{couple.personOne.name}</option>
+        <option>{couple.personTwo.name}</option>
       </select></label>
       <label>写信日期<input required type="date" name="date" value={form.date} onChange={update} /></label>
       {form.kind === 'letter' && (
@@ -48,7 +48,7 @@ function MessageForm({ onSave, onClose }) {
   )
 }
 
-export default function MessagesPage({ items, addItem, deleteItem }) {
+export default function MessagesPage({ items, settings = siteConfig, addItem, deleteItem }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [openedLetters, setOpenedLetters] = useState([])
   const messages = [...items].filter((item) => item.kind === 'message').sort((a, b) => b.date.localeCompare(a.date))
@@ -118,7 +118,7 @@ export default function MessagesPage({ items, addItem, deleteItem }) {
 
       {modalOpen && (
         <Modal title="写给重要的人" onClose={() => setModalOpen(false)}>
-          <MessageForm onClose={() => setModalOpen(false)} onSave={(item) => addItem('messages', item)} />
+          <MessageForm couple={settings.couple} onClose={() => setModalOpen(false)} onSave={(item) => addItem('messages', item)} />
         </Modal>
       )}
     </div>

@@ -4,18 +4,35 @@ import { siteConfig } from '../data/siteConfig'
 import { signedPhotoUrl, uploadHeroPhoto } from '../services/photoStorage'
 import { countdownLabel, daysTogether, formatDate, getNextAnniversary } from '../utils/date'
 
-export default function HomePage({ data, onNavigate, onHeroPhotoUploaded }) {
-  const togetherDays = daysTogether(siteConfig.couple.relationshipStart)
+function useSignedPhoto(path, fallback) {
+  const [url, setUrl] = useState(fallback)
+
+  useEffect(() => {
+    let active = true
+    setUrl(fallback)
+    if (path) signedPhotoUrl(path).then((signedUrl) => {
+      if (active && signedUrl) setUrl(signedUrl)
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [path, fallback])
+
+  return url
+}
+
+export default function HomePage({ data, settings = siteConfig, onNavigate, onHeroPhotoUploaded }) {
+  const togetherDays = daysTogether(settings.couple.relationshipStart)
   const nextAnniversary = getNextAnniversary(data.anniversaries)
   const photoInput = useRef(null)
-  const [heroPhoto, setHeroPhoto] = useState(siteConfig.home.heroPhoto)
+  const [heroPhoto, setHeroPhoto] = useState(settings.home.heroPhoto)
   const [uploading, setUploading] = useState(false)
   const [photoMessage, setPhotoMessage] = useState('')
+  const personOneAvatar = useSignedPhoto(settings.couple.personOne.avatarPath, settings.couple.personOne.avatar)
+  const personTwoAvatar = useSignedPhoto(settings.couple.personTwo.avatarPath, settings.couple.personTwo.avatar)
 
   useEffect(() => {
     let active = true
     if (!data.heroPhotoPath) {
-      setHeroPhoto(siteConfig.home.heroPhoto)
+      setHeroPhoto(settings.home.heroPhoto)
       return undefined
     }
 
@@ -30,7 +47,7 @@ export default function HomePage({ data, onNavigate, onHeroPhotoUploaded }) {
     return () => {
       active = false
     }
-  }, [data.heroPhotoPath])
+  }, [data.heroPhotoPath, settings.home.heroPhoto])
 
   const handlePhoto = async (event) => {
     const [file] = event.target.files
@@ -57,29 +74,29 @@ export default function HomePage({ data, onNavigate, onHeroPhotoUploaded }) {
         <div className="paper-tape" aria-hidden="true" />
         <div className="hero-copy">
           <p className="eyebrow"><Sparkles size={15} /> OUR LITTLE WORLD</p>
-          <h1>{siteConfig.siteName}</h1>
-          <p className="hero-subtitle">{siteConfig.siteSubtitle}</p>
+          <h1>{settings.siteName}</h1>
+          <p className="hero-subtitle">{settings.siteSubtitle}</p>
 
           <div className="couple-row" aria-label="情侣信息">
             <div className="person-card">
-              <img src={siteConfig.couple.personOne.avatar} alt={`${siteConfig.couple.personOne.name}的头像`} />
-              <span>{siteConfig.couple.personOne.name}</span>
+              <img src={personOneAvatar} alt={`${settings.couple.personOne.name}的头像`} />
+              <span>{settings.couple.personOne.name}</span>
             </div>
             <span className="beating-heart" aria-label="相爱"><Heart size={25} fill="currentColor" /></span>
             <div className="person-card">
-              <img src={siteConfig.couple.personTwo.avatar} alt={`${siteConfig.couple.personTwo.name}的头像`} />
-              <span>{siteConfig.couple.personTwo.name}</span>
+              <img src={personTwoAvatar} alt={`${settings.couple.personTwo.name}的头像`} />
+              <span>{settings.couple.personTwo.name}</span>
             </div>
           </div>
 
-          <p className="start-date">从 {formatDate(siteConfig.couple.relationshipStart)} 开始</p>
+          <p className="start-date">从 {formatDate(settings.couple.relationshipStart)} 开始</p>
         </div>
 
         <div className="hero-photo-area">
           <figure className="hero-polaroid">
             <span className="photo-sticker" aria-hidden="true">LOVE</span>
-            <img src={heroPhoto} alt={siteConfig.home.photoCaption} />
-            <figcaption>{siteConfig.home.photoCaption} ♡</figcaption>
+            <img src={heroPhoto} alt={settings.home.photoCaption} />
+            <figcaption>{settings.home.photoCaption} ♡</figcaption>
           </figure>
           <button type="button" className="button secondary hero-upload-button" onClick={() => photoInput.current?.click()} disabled={uploading}>
             {uploading ? <><LoaderCircle className="spin" size={17} /> 正在上传</> : <><UploadCloud size={17} /> 更换我们的合照</>}
@@ -108,7 +125,7 @@ export default function HomePage({ data, onNavigate, onHeroPhotoUploaded }) {
 
       <section className="quote-card">
         <span className="quote-mark">“</span>
-        <p>{siteConfig.home.quote}</p>
+        <p>{settings.home.quote}</p>
         <span className="quote-line" aria-hidden="true" />
       </section>
 
