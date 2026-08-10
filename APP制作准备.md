@@ -21,6 +21,7 @@
 - APP 唯一包名已设置为 `com.yg1224.littleworld`。
 - 已增加 `npm run app:sync`，用于把最新网页功能同步到两个 APP 工程。
 - 已增加 `npm run app:android` 和 `npm run app:ios`，用于打开对应的原生工程。
+- 已接入访问流量记录和监控窗口，网页、Android 与 iPhone 共用同一份 Supabase 统计数据。
 
 ## 第一版 APP 计划
 

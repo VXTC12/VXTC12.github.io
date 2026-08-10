@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Camera, LoaderCircle, LogOut, PencilLine, Settings2 } from 'lucide-react'
+import { BarChart3, Camera, LoaderCircle, LogOut, PencilLine, Settings2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { removePhoto, signedPhotoUrl, uploadAccountAvatar } from '../services/photoStorage'
 
@@ -7,7 +7,7 @@ function accountInitial(email) {
   return email?.trim().charAt(0).toUpperCase() || '♡'
 }
 
-export default function AccountMenu({ user, onOpenAdmin, onStartPageEdit, pageEditing, onSignOut }) {
+export default function AccountMenu({ user, onOpenAdmin, onOpenAnalytics, onStartPageEdit, pageEditing, onSignOut }) {
   const menuRef = useRef(null)
   const fileInputRef = useRef(null)
   const [open, setOpen] = useState(false)
@@ -127,6 +127,9 @@ export default function AccountMenu({ user, onOpenAdmin, onStartPageEdit, pageEd
           />
           <button type="button" className="account-action account-admin" onClick={() => { setOpen(false); onStartPageEdit() }} disabled={pageEditing}>
             <PencilLine size={17} />{pageEditing ? '正在直接编辑页面' : '直接编辑页面文字'}
+          </button>
+          <button type="button" className="account-action" onClick={() => { setOpen(false); onOpenAnalytics() }}>
+            <BarChart3 size={17} />查看访问流量
           </button>
           <button type="button" className="account-action account-admin" onClick={() => { setOpen(false); onOpenAdmin() }}>
             <Settings2 size={17} />管理头像与日期

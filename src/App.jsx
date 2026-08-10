@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import AdminSettingsModal from './components/AdminSettingsModal'
+import AnalyticsDashboardModal from './components/AnalyticsDashboardModal'
 import AuthGate from './components/AuthGate'
 import InlineEditableText from './components/InlineEditableText'
 import Navigation from './components/Navigation'
 import PageEditToolbar from './components/PageEditToolbar'
 import { siteConfig } from './data/siteConfig'
 import { normalizeSiteData, usePersistentData } from './hooks/usePersistentData'
+import useAnalyticsTracking from './hooks/useAnalyticsTracking'
 import AnniversariesPage from './pages/AnniversariesPage'
 import DailyPage from './pages/DailyPage'
 import GalleryPage from './pages/GalleryPage'
@@ -45,10 +47,13 @@ function SiteApp({ session, onSignOut }) {
   const [data, setData, { syncStatus, syncError }] = usePersistentData(session.user.id)
   const [activePage, setActivePage] = useState(pageFromHash)
   const [adminOpen, setAdminOpen] = useState(false)
+  const [analyticsOpen, setAnalyticsOpen] = useState(false)
   const [pageEditing, setPageEditing] = useState(false)
   const [editingSettings, setEditingSettings] = useState(null)
   const settings = data.siteSettings ?? siteConfig
   const displayedSettings = pageEditing && editingSettings ? editingSettings : settings
+
+  useAnalyticsTracking(session.user.id, activePage)
 
   useEffect(() => {
     const handleHashChange = () => setActivePage(pageFromHash())
@@ -164,6 +169,7 @@ function SiteApp({ session, onSignOut }) {
         siteSettings={displayedSettings}
         syncStatus={syncStatus}
         onOpenAdmin={() => { cancelPageEditing(); setAdminOpen(true) }}
+        onOpenAnalytics={() => setAnalyticsOpen(true)}
         onStartPageEdit={startPageEditing}
         pageEditing={pageEditing}
         onSignOut={onSignOut}
@@ -175,6 +181,7 @@ function SiteApp({ session, onSignOut }) {
         <small>登录后的记录会保存到私有云端，也建议定期导出备份。</small>
       </footer>
       {pageEditing && <PageEditToolbar onSave={savePageEditing} onCancel={cancelPageEditing} />}
+      {analyticsOpen && <AnalyticsDashboardModal user={session.user} onClose={() => setAnalyticsOpen(false)} />}
       {adminOpen && (
         <AdminSettingsModal
           settings={settings}
