@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import AdminSettingsModal from './components/AdminSettingsModal'
 import AnalyticsDashboardModal from './components/AnalyticsDashboardModal'
+import AppUpdateModal from './components/AppUpdateModal'
 import AuthGate from './components/AuthGate'
 import InlineEditableText from './components/InlineEditableText'
 import Navigation from './components/Navigation'
@@ -8,6 +9,7 @@ import PageEditToolbar from './components/PageEditToolbar'
 import { siteConfig } from './data/siteConfig'
 import { normalizeSiteData, usePersistentData } from './hooks/usePersistentData'
 import useAnalyticsTracking from './hooks/useAnalyticsTracking'
+import { checkForAppUpdate } from './services/appUpdate'
 import AnniversariesPage from './pages/AnniversariesPage'
 import DailyPage from './pages/DailyPage'
 import GalleryPage from './pages/GalleryPage'
@@ -48,6 +50,8 @@ function SiteApp({ session, onSignOut }) {
   const [activePage, setActivePage] = useState(pageFromHash)
   const [adminOpen, setAdminOpen] = useState(false)
   const [analyticsOpen, setAnalyticsOpen] = useState(false)
+  const [updateOpen, setUpdateOpen] = useState(false)
+  const [availableUpdate, setAvailableUpdate] = useState(null)
   const [pageEditing, setPageEditing] = useState(false)
   const [editingSettings, setEditingSettings] = useState(null)
   const settings = data.siteSettings ?? siteConfig
@@ -64,6 +68,21 @@ function SiteApp({ session, onSignOut }) {
   useEffect(() => {
     document.title = displayedSettings.siteName
   }, [displayedSettings.siteName])
+
+  useEffect(() => {
+    let active = true
+    const timer = window.setTimeout(() => {
+      checkForAppUpdate()
+        .then((result) => {
+          if (active && result.available) setAvailableUpdate(result)
+        })
+        .catch(() => undefined)
+    }, 1800)
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
+  }, [])
 
   const navigate = useCallback((page) => {
     window.location.hash = `/${page}`
@@ -149,7 +168,7 @@ function SiteApp({ session, onSignOut }) {
 
   const sharedActions = { addItem, updateItem, deleteItem }
   const pages = {
-    home: <HomePage data={data} settings={displayedSettings} onNavigate={navigate} onHeroPhotoUploaded={(path) => setData((current) => ({ ...current, heroPhotoPath: path }))} pageEditing={pageEditing} onSettingsTextChange={updateSettingsText} />,
+    home: <HomePage data={data} settings={displayedSettings} user={session.user} onNavigate={navigate} onHeroPhotoUploaded={(path) => setData((current) => ({ ...current, heroPhotoPath: path }))} pageEditing={pageEditing} onSettingsTextChange={updateSettingsText} />,
     timeline: <TimelinePage items={data.timeline} {...sharedActions} {...pageTextProps('timeline')} />,
     daily: <DailyPage items={data.daily} {...sharedActions} {...pageTextProps('daily')} />,
     gallery: <GalleryPage items={data.gallery} {...sharedActions} {...pageTextProps('gallery')} />,
@@ -170,11 +189,19 @@ function SiteApp({ session, onSignOut }) {
         syncStatus={syncStatus}
         onOpenAdmin={() => { cancelPageEditing(); setAdminOpen(true) }}
         onOpenAnalytics={() => setAnalyticsOpen(true)}
+        onOpenUpdate={() => setUpdateOpen(true)}
         onStartPageEdit={startPageEditing}
         pageEditing={pageEditing}
         onSignOut={onSignOut}
       />
       {syncError && <div className="sync-banner" role="status">{syncError}</div>}
+      {availableUpdate && (
+        <div className="app-update-banner" role="status">
+          <span>发现新版本 v{availableUpdate.version}</span>
+          <button type="button" onClick={() => setUpdateOpen(true)}>查看并更新</button>
+          <button type="button" className="app-update-dismiss" onClick={() => setAvailableUpdate(null)} aria-label="暂时关闭更新提醒">×</button>
+        </div>
+      )}
       <main className="site-main" key={activePage}>{pages[activePage]}</main>
       <footer className="site-footer">
         <span aria-hidden="true">♡</span> <InlineEditableText value={displayedSettings.footerText} editing={pageEditing} onChange={(value) => updateSettingsText(['footerText'], value)} ariaLabel="页脚文字" />
@@ -182,6 +209,7 @@ function SiteApp({ session, onSignOut }) {
       </footer>
       {pageEditing && <PageEditToolbar onSave={savePageEditing} onCancel={cancelPageEditing} />}
       {analyticsOpen && <AnalyticsDashboardModal user={session.user} onClose={() => setAnalyticsOpen(false)} />}
+      {updateOpen && <AppUpdateModal initialUpdate={availableUpdate} onClose={() => setUpdateOpen(false)} />}
       {adminOpen && (
         <AdminSettingsModal
           settings={settings}

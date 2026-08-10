@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { CalendarHeart, Heart, ListChecks, LoaderCircle, NotebookPen, Sparkles, UploadCloud } from 'lucide-react'
+import CoupleDistanceCard from '../components/CoupleDistanceCard'
 import InlineEditableText from '../components/InlineEditableText'
 import { siteConfig } from '../data/siteConfig'
 import useSignedPhoto from '../hooks/useSignedPhoto'
 import { signedPhotoUrl, uploadHeroPhoto } from '../services/photoStorage'
 import { countdownLabel, daysTogether, formatDate, getNextAnniversary } from '../utils/date'
 
-export default function HomePage({ data, settings = siteConfig, onNavigate, onHeroPhotoUploaded, pageEditing = false, onSettingsTextChange }) {
+export default function HomePage({ data, settings = siteConfig, user, onNavigate, onHeroPhotoUploaded, pageEditing = false, onSettingsTextChange }) {
   const togetherDays = daysTogether(settings.couple.relationshipStart)
   const nextAnniversary = getNextAnniversary(data.anniversaries)
   const pageText = settings.pages.home
@@ -110,6 +111,13 @@ export default function HomePage({ data, settings = siteConfig, onNavigate, onHe
           </div>
         </article>
       </section>
+
+      <CoupleDistanceCard
+        user={user}
+        pageText={pageText}
+        editing={pageEditing}
+        onTextChange={(field, value) => onSettingsTextChange(['pages', 'home', field], value)}
+      />
 
       <section className="quote-card">
         <span className="quote-mark">“</span>

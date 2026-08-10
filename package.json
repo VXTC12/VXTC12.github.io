@@ -1,23 +1,28 @@
 {
   "name": "my-webstie",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "app:sync": "npm run build && cap sync",
+    "app:sync": "npm run build && npm run app:prepare && cap sync",
     "app:android": "npm run app:sync && cap open android",
     "app:ios": "npm run app:sync && cap open ios",
     "app:assets": "python scripts/generate-app-assets.py",
+    "app:prepare": "node scripts/prepare-capacitor-assets.mjs",
     "app:version": "node scripts/set-app-version.mjs",
-    "app:release": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android-release.ps1"
+    "app:release": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android-release.ps1",
+    "app:publish-update": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-android-update.ps1"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.4",
     "@capacitor/core": "^8.5.0",
+    "@capacitor/geolocation": "^8.2.1",
     "@capacitor/ios": "^8.5.0",
     "@supabase/supabase-js": "^2.112.1",
     "lucide-react": "^1.28.0",
