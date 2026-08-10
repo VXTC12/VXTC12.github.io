@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { createId } from '../utils/id'
 
 export const PHOTO_BUCKET = 'couple-photos'
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024
@@ -29,7 +30,7 @@ export async function uploadHeroPhoto(file) {
   validatePhoto(file)
   if (!supabase) throw new Error('照片空间还没有连接成功。')
 
-  const path = `hero/${crypto.randomUUID()}.${extensionFor(file)}`
+  const path = `hero/${createId('photo')}.${extensionFor(file)}`
   const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
     contentType: file.type,
     cacheControl: '3600',
@@ -44,7 +45,7 @@ export async function uploadAccountAvatar(file, userId) {
   validatePhoto(file)
   if (!supabase || !userId) throw new Error('头像空间还没有连接成功。')
 
-  const path = `avatars/${userId}/${crypto.randomUUID()}.${extensionFor(file)}`
+  const path = `avatars/${userId}/${createId('avatar')}.${extensionFor(file)}`
   const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
     contentType: file.type,
     cacheControl: '3600',
