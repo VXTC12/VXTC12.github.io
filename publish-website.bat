@@ -27,7 +27,13 @@ if errorlevel 1 goto error
 :push_changes
 echo.
 echo [3/3] 正在上传到 GitHub...
-git push origin main
+set "SITE_GIT_PROXY="
+for /f "usebackq delims=" %%P in (`powershell.exe -NoProfile -Command "$s=Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings'; if($s.ProxyEnable -eq 1 -and $s.ProxyServer){$v=$s.ProxyServer; if($v -notmatch '://'){$v='http://'+$v}; $v}"`) do set "SITE_GIT_PROXY=%%P"
+if defined SITE_GIT_PROXY (
+  git -c "http.proxy=%SITE_GIT_PROXY%" -c "https.proxy=%SITE_GIT_PROXY%" push origin main
+) else (
+  git push origin main
+)
 if errorlevel 1 goto error
 
 echo.
