@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#BF6876</color>
+    <color name="colorPrimaryDark">#503A31</color>
+    <color name="colorAccent">#BF6876</color>
+    <color name="app_cream">#FFF7EC</color>
+</resources>

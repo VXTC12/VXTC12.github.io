@@ -1,7 +1,7 @@
 {
   "name": "my-webstie",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "app:sync": "npm run build && cap sync",
     "app:android": "npm run app:sync && cap open android",
-    "app:ios": "npm run app:sync && cap open ios"
+    "app:ios": "npm run app:sync && cap open ios",
+    "app:assets": "python scripts/generate-app-assets.py",
+    "app:version": "node scripts/set-app-version.mjs",
+    "app:release": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android-release.ps1"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",

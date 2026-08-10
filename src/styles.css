@@ -541,7 +541,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 }
 
 @media (max-width: 820px) {
-  body { padding-bottom: 74px; }
+  body { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
   body.modal-open .mobile-nav { display: none; }
   .site-header { position: relative; min-height: 66px; grid-template-columns: 1fr auto; }
   .brand { font-size: 20px; }
