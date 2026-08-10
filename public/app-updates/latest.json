@@ -1,9 +1,9 @@
 {
-    "version":  "1.2.0",
-    "versionCode":  3,
+    "version":  "1.2.1",
+    "versionCode":  4,
     "downloadUrl":  "https://yg1224.com/app-updates/YG-Little-World-latest.apk",
-    "notes":  "新增可缩放双人位置地图、头像标记、直线连线、距离标签和定位精度范围。",
-    "publishedAt":  "2026-08-10T08:20:44.0372946Z",
-    "size":  14182625,
-    "sha256":  "659f2e0ded2ec7c4923d79fefc1a56f7a746a7e2e323496418f1d29758e62a01"
+    "notes":  "地图现在只需任意一人共享位置即可显示；双方都有位置后自动增加连线和距离。",
+    "publishedAt":  "2026-08-10T08:34:48.9435645Z",
+    "size":  14182745,
+    "sha256":  "bef649785f991f067f06db11bf7662b94eb199390010ce815d731f73cc52efbd"
 }

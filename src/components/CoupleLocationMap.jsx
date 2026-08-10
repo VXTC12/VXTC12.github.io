@@ -41,7 +41,12 @@ function distanceIcon(distanceLabel) {
   })
 }
 
-function fitTwoPeople(map, firstPoint, secondPoint, distance) {
+function focusLocations(map, firstPoint, secondPoint, distance) {
+  if (!firstPoint && !secondPoint) return
+  if (!firstPoint || !secondPoint) {
+    map.setView(firstPoint || secondPoint, 14, { animate: true })
+    return
+  }
   if (distance !== null && distance < 80) {
     map.setView(firstPoint, 16, { animate: true })
     return
@@ -56,7 +61,10 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
   const mapRef = useRef(null)
   const myAvatar = useSignedPhoto(myLocation?.avatar_path, '')
   const partnerAvatar = useSignedPhoto(partnerLocation?.avatar_path, '')
-  const hasBothLocations = Boolean(myLocation && partnerLocation)
+  const hasMyLocation = Boolean(myLocation)
+  const hasPartnerLocation = Boolean(partnerLocation)
+  const hasAnyLocation = hasMyLocation || hasPartnerLocation
+  const hasBothLocations = hasMyLocation && hasPartnerLocation
   const myLatitude = myLocation?.latitude
   const myLongitude = myLocation?.longitude
   const myAccuracy = myLocation?.accuracy
@@ -67,7 +75,7 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
   const partnerName = partnerLocation?.display_name
 
   useEffect(() => {
-    if (!hasBothLocations || !containerRef.current) return undefined
+    if (!hasAnyLocation || !containerRef.current) return undefined
 
     const map = L.map(containerRef.current, {
       attributionControl: true,
@@ -84,10 +92,10 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
       subdomains: 'abcd',
     }).addTo(map)
 
-    const myPoint = [myLatitude, myLongitude]
-    const partnerPoint = [partnerLatitude, partnerLongitude]
+    const myPoint = hasMyLocation ? [myLatitude, myLongitude] : null
+    const partnerPoint = hasPartnerLocation ? [partnerLatitude, partnerLongitude] : null
 
-    if (myAccuracy > 0) {
+    if (myPoint && myAccuracy > 0) {
       L.circle(myPoint, {
         radius: myAccuracy,
         color: '#b96570',
@@ -96,7 +104,7 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
         fillOpacity: 0.22,
       }).addTo(map)
     }
-    if (partnerAccuracy > 0) {
+    if (partnerPoint && partnerAccuracy > 0) {
       L.circle(partnerPoint, {
         radius: partnerAccuracy,
         color: '#8f745f',
@@ -106,29 +114,31 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
       }).addTo(map)
     }
 
-    L.polyline([myPoint, partnerPoint], {
-      color: '#a84f5c',
-      dashArray: '8 10',
-      lineCap: 'round',
-      opacity: 0.9,
-      weight: 3,
-    }).addTo(map)
+    if (myPoint) L.marker(myPoint, { icon: personIcon(myName, myAvatar, 'me'), zIndexOffset: 200 }).addTo(map)
+    if (partnerPoint) L.marker(partnerPoint, { icon: personIcon(partnerName, partnerAvatar, 'partner'), zIndexOffset: 200 }).addTo(map)
 
-    L.marker(myPoint, { icon: personIcon(myName, myAvatar, 'me'), zIndexOffset: 200 }).addTo(map)
-    L.marker(partnerPoint, { icon: personIcon(partnerName, partnerAvatar, 'partner'), zIndexOffset: 200 }).addTo(map)
+    if (myPoint && partnerPoint) {
+      L.polyline([myPoint, partnerPoint], {
+        color: '#a84f5c',
+        dashArray: '8 10',
+        lineCap: 'round',
+        opacity: 0.9,
+        weight: 3,
+      }).addTo(map)
 
-    const midpoint = [
-      (myLatitude + partnerLatitude) / 2,
-      (myLongitude + partnerLongitude) / 2,
-    ]
-    L.marker(midpoint, {
-      icon: distanceIcon(distanceLabel),
-      interactive: false,
-      zIndexOffset: 100,
-    }).addTo(map)
+      const midpoint = [
+        (myLatitude + partnerLatitude) / 2,
+        (myLongitude + partnerLongitude) / 2,
+      ]
+      L.marker(midpoint, {
+        icon: distanceIcon(distanceLabel),
+        interactive: false,
+        zIndexOffset: 100,
+      }).addTo(map)
+    }
 
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map)
-    fitTwoPeople(map, myPoint, partnerPoint, distance)
+    focusLocations(map, myPoint, partnerPoint, distance)
     const resizeTimer = window.setTimeout(() => map.invalidateSize(), 100)
 
     return () => {
@@ -139,7 +149,10 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
   }, [
     distance,
     distanceLabel,
+    hasAnyLocation,
     hasBothLocations,
+    hasMyLocation,
+    hasPartnerLocation,
     myAvatar,
     myAccuracy,
     myLatitude,
@@ -152,31 +165,31 @@ export default function CoupleLocationMap({ myLocation, partnerLocation, distanc
     partnerName,
   ])
 
-  if (!hasBothLocations) {
+  if (!hasAnyLocation) {
     return (
       <div className="couple-map-placeholder">
         <MapPinned size={34} />
-        <strong>两个人共享位置后，地图会在这里出现</strong>
-        <span>地图不会显示具体坐标，只显示头像、相对位置和直线距离。</span>
+        <strong>任意一个人共享位置后，地图会在这里出现</strong>
+        <span>只有一个位置时显示该位置；两个人都共享后再显示连线和距离。</span>
       </div>
     )
   }
 
   return (
     <div className="couple-map-shell">
-      <div ref={containerRef} className="couple-map" aria-label="显示两个人位置和直线距离的互动地图" />
+      <div ref={containerRef} className="couple-map" aria-label={hasBothLocations ? '显示两个人位置和直线距离的互动地图' : '显示已共享位置的互动地图'} />
       <button
         type="button"
         className="couple-map-fit"
-        onClick={() => mapRef.current && fitTwoPeople(
+        onClick={() => mapRef.current && focusLocations(
           mapRef.current,
-          [myLatitude, myLongitude],
-          [partnerLatitude, partnerLongitude],
+          hasMyLocation ? [myLatitude, myLongitude] : null,
+          hasPartnerLocation ? [partnerLatitude, partnerLongitude] : null,
           distance,
         )}
-        aria-label="在地图中重新显示两个人的位置"
+        aria-label={hasBothLocations ? '在地图中重新显示两个人的位置' : '在地图中重新显示已共享的位置'}
       >
-        <Crosshair size={17} /> 显示双方
+        <Crosshair size={17} /> {hasBothLocations ? '显示双方' : '显示位置'}
       </button>
       <p className="couple-map-tip">双指缩放 · 单指拖动 · 圆圈表示定位精度</p>
     </div>
