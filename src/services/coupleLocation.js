@@ -42,6 +42,46 @@ async function currentPosition() {
   }
 }
 
+export async function requestLocationAccess() {
+  if (!Capacitor.isNativePlatform()) return 'browser'
+
+  try {
+    const current = await Geolocation.checkPermissions()
+    if (current.location === 'granted' || current.coarseLocation === 'granted') return 'granted'
+    if (current.location === 'denied' && current.coarseLocation === 'denied') return 'denied'
+
+    const requested = await Geolocation.requestPermissions({ permissions: ['location'] })
+    return requested.location === 'granted' || requested.coarseLocation === 'granted'
+      ? 'granted'
+      : 'denied'
+  } catch {
+    return 'denied'
+  }
+}
+
+export async function updateSharedLocationProfile(user) {
+  if (!supabase || !user?.id) return
+  const id = locationId(user.id)
+  const { data, error: readError } = await supabase
+    .from('site_data')
+    .select('content')
+    .eq('id', id)
+    .maybeSingle()
+  if (readError || !data?.content?.sharing) return
+
+  const { error } = await supabase.from('site_data').upsert({
+    id,
+    content: {
+      ...data.content,
+      display_name: displayName(user),
+      avatar_path: user?.user_metadata?.avatar_path ?? '',
+    },
+    updated_at: new Date().toISOString(),
+    updated_by: user.id,
+  })
+  if (error) throw error
+}
+
 export async function shareMyLocation(user) {
   if (!supabase || !user?.id) throw new Error('云端连接还没有准备好。')
   const position = await currentPosition()

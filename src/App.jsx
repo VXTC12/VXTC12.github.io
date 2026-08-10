@@ -6,10 +6,12 @@ import AuthGate from './components/AuthGate'
 import InlineEditableText from './components/InlineEditableText'
 import Navigation from './components/Navigation'
 import PageEditToolbar from './components/PageEditToolbar'
+import PermissionWelcomeModal from './components/PermissionWelcomeModal'
 import { siteConfig } from './data/siteConfig'
 import { normalizeSiteData, usePersistentData } from './hooks/usePersistentData'
 import useAnalyticsTracking from './hooks/useAnalyticsTracking'
 import { checkForAppUpdate } from './services/appUpdate'
+import { shouldShowPermissionWelcome } from './services/appPermissions'
 import AnniversariesPage from './pages/AnniversariesPage'
 import DailyPage from './pages/DailyPage'
 import GalleryPage from './pages/GalleryPage'
@@ -58,6 +60,7 @@ function SiteApp({ session, onSignOut }) {
   const [updateOpen, setUpdateOpen] = useState(false)
   const [availableUpdate, setAvailableUpdate] = useState(null)
   const [pageEditing, setPageEditing] = useState(false)
+  const [permissionOpen, setPermissionOpen] = useState(shouldShowPermissionWelcome)
   const [editingSettings, setEditingSettings] = useState(null)
   const settings = data.siteSettings ?? siteConfig
   const displayedSettings = pageEditing && editingSettings ? editingSettings : settings
@@ -194,6 +197,7 @@ function SiteApp({ session, onSignOut }) {
         syncStatus={syncStatus}
         onOpenAdmin={() => { cancelPageEditing(); setAdminOpen(true) }}
         onOpenAnalytics={() => setAnalyticsOpen(true)}
+        onOpenPermissions={() => setPermissionOpen(true)}
         onOpenUpdate={() => setUpdateOpen(true)}
         onStartPageEdit={startPageEditing}
         pageEditing={pageEditing}
@@ -223,6 +227,7 @@ function SiteApp({ session, onSignOut }) {
       {pageEditing && <PageEditToolbar onSave={savePageEditing} onCancel={cancelPageEditing} />}
       {analyticsOpen && <AnalyticsDashboardModal user={session.user} onClose={() => setAnalyticsOpen(false)} />}
       {updateOpen && <AppUpdateModal initialUpdate={availableUpdate} onClose={() => setUpdateOpen(false)} />}
+      {permissionOpen && <PermissionWelcomeModal onClose={() => setPermissionOpen(false)} />}
       {adminOpen && (
         <AdminSettingsModal
           settings={settings}
