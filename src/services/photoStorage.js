@@ -71,6 +71,22 @@ export async function uploadSiteAvatar(file, slot) {
   return { path, url: await signedPhotoUrl(path) }
 }
 
+export async function uploadContentPhoto(file, section) {
+  validatePhoto(file)
+  if (!supabase) throw new Error('照片空间还没有连接成功。')
+
+  const safeSection = String(section).replace(/[^a-z0-9-]/gi, '') || 'records'
+  const path = `content/${safeSection}/${createId('photo')}.${extensionFor(file)}`
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
+    contentType: file.type,
+    cacheControl: '3600',
+    upsert: false,
+  })
+  if (error) throw error
+
+  return { path, url: await signedPhotoUrl(path) }
+}
+
 export async function removePhoto(path) {
   if (!path || !supabase) return
   const { error } = await supabase.storage.from(PHOTO_BUCKET).remove([path])

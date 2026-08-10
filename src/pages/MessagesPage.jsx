@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Clock3, Heart, Mail, MailOpen, Plus, Send, Trash2 } from 'lucide-react'
+import { Clock3, Edit3, Heart, Mail, MailOpen, Plus, Send, Trash2 } from 'lucide-react'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
 import { siteConfig } from '../data/siteConfig'
 import { countdownLabel, daysUntil, formatDate, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
 
-function MessageForm({ couple, onSave, onClose }) {
-  const [form, setForm] = useState({
+function MessageForm({ item, couple, onSave, onClose }) {
+  const [form, setForm] = useState(item ?? {
     kind: 'message',
     author: couple.personOne.name,
     date: todayInputValue(),
@@ -15,10 +15,11 @@ function MessageForm({ couple, onSave, onClose }) {
     content: '',
     openDate: '',
   })
+  const authors = [...new Set([couple.personOne.name, couple.personTwo.name, form.author].filter(Boolean))]
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value })
   const submit = (event) => {
     event.preventDefault()
-    onSave({ ...form, id: createId(form.kind) })
+    onSave({ ...form, id: item?.id ?? createId(form.kind) })
     onClose()
   }
 
@@ -29,8 +30,7 @@ function MessageForm({ couple, onSave, onClose }) {
         <button type="button" className={form.kind === 'letter' ? 'active' : ''} onClick={() => setForm({ ...form, kind: 'letter' })}><Mail size={17} /> 未来信箱</button>
       </div>
       <label>留言人<select name="author" value={form.author} onChange={update}>
-        <option>{couple.personOne.name}</option>
-        <option>{couple.personTwo.name}</option>
+        {authors.map((author) => <option key={author}>{author}</option>)}
       </select></label>
       <label>写信日期<input required type="date" name="date" value={form.date} onChange={update} /></label>
       {form.kind === 'letter' && (
@@ -48,11 +48,14 @@ function MessageForm({ couple, onSave, onClose }) {
   )
 }
 
-export default function MessagesPage({ items, settings = siteConfig, addItem, deleteItem }) {
+export default function MessagesPage({ items, settings = siteConfig, addItem, updateItem, deleteItem }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState(undefined)
   const [openedLetters, setOpenedLetters] = useState([])
   const messages = [...items].filter((item) => item.kind === 'message').sort((a, b) => b.date.localeCompare(a.date))
   const letters = [...items].filter((item) => item.kind === 'letter').sort((a, b) => a.openDate.localeCompare(b.openDate))
+  const openNew = () => { setEditing(undefined); setModalOpen(true) }
+  const openEdit = (item) => { setEditing(item); setModalOpen(true) }
 
   return (
     <div className="page-container">
@@ -60,7 +63,7 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, de
         eyebrow="LOVE LETTERS"
         title="留言与情书"
         description="有些话现在就想告诉你，有些话想留给未来的我们。"
-        action={<button type="button" className="button primary" onClick={() => setModalOpen(true)}><Plus size={18} /> 写留言 / 信</button>}
+        action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 写留言 / 信</button>}
       />
 
       <section className="message-section">
@@ -75,6 +78,7 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, de
               <Heart className="note-heart" size={18} fill="currentColor" />
               <p>{item.content}</p>
               <footer><strong>— {item.author}</strong><span>{formatDate(item.date)}</span></footer>
+              <button type="button" className="edit-note" aria-label="编辑留言" onClick={() => openEdit(item)}><Edit3 size={15} /></button>
               <button type="button" className="delete-note" aria-label="删除留言" onClick={() => {
                 if (window.confirm('确定删除这条留言吗？')) deleteItem('messages', item.id)
               }}><Trash2 size={15} /></button>
@@ -107,6 +111,7 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, de
                   {unlocked && !opened && <button type="button" className="button primary small" onClick={() => setOpenedLetters([...openedLetters, letter.id])}><MailOpen size={17} /> 打开这封信</button>}
                   {unlocked && opened && <blockquote>{letter.content}</blockquote>}
                 </div>
+                <button type="button" className="edit-letter" aria-label="编辑信件" onClick={() => openEdit(letter)}><Edit3 size={16} /></button>
                 <button type="button" className="delete-letter" aria-label="删除信件" onClick={() => {
                   if (window.confirm('确定删除这封未来信吗？')) deleteItem('messages', letter.id)
                 }}><Trash2 size={16} /></button>
@@ -117,8 +122,13 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, de
       </section>
 
       {modalOpen && (
-        <Modal title="写给重要的人" onClose={() => setModalOpen(false)}>
-          <MessageForm couple={settings.couple} onClose={() => setModalOpen(false)} onSave={(item) => addItem('messages', item)} />
+        <Modal title={editing ? '编辑留言 / 未来信' : '写给重要的人'} onClose={() => setModalOpen(false)}>
+          <MessageForm
+            item={editing}
+            couple={settings.couple}
+            onClose={() => setModalOpen(false)}
+            onSave={(item) => editing ? updateItem('messages', item) : addItem('messages', item)}
+          />
         </Modal>
       )}
     </div>

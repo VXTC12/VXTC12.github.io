@@ -110,7 +110,7 @@ function SiteApp({ session, onSignOut }) {
     home: <HomePage data={data} settings={settings} onNavigate={navigate} onHeroPhotoUploaded={(path) => setData((current) => ({ ...current, heroPhotoPath: path }))} />,
     timeline: <TimelinePage items={data.timeline} {...sharedActions} />,
     daily: <DailyPage items={data.daily} {...sharedActions} />,
-    gallery: <GalleryPage items={data.gallery} />,
+    gallery: <GalleryPage items={data.gallery} {...sharedActions} />,
     wishes: <WishesPage items={data.wishes} {...sharedActions} />,
     anniversaries: <AnniversariesPage items={data.anniversaries} {...sharedActions} />,
     messages: <MessagesPage items={data.messages} settings={settings} {...sharedActions} />,

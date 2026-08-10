@@ -1,23 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { CalendarHeart, Heart, ListChecks, LoaderCircle, NotebookPen, Sparkles, UploadCloud } from 'lucide-react'
 import { siteConfig } from '../data/siteConfig'
+import useSignedPhoto from '../hooks/useSignedPhoto'
 import { signedPhotoUrl, uploadHeroPhoto } from '../services/photoStorage'
 import { countdownLabel, daysTogether, formatDate, getNextAnniversary } from '../utils/date'
-
-function useSignedPhoto(path, fallback) {
-  const [url, setUrl] = useState(fallback)
-
-  useEffect(() => {
-    let active = true
-    setUrl(fallback)
-    if (path) signedPhotoUrl(path).then((signedUrl) => {
-      if (active && signedUrl) setUrl(signedUrl)
-    }).catch(() => undefined)
-    return () => { active = false }
-  }, [path, fallback])
-
-  return url
-}
 
 export default function HomePage({ data, settings = siteConfig, onNavigate, onHeroPhotoUploaded }) {
   const togetherDays = daysTogether(settings.couple.relationshipStart)
