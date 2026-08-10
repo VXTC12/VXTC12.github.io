@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Clock3, Edit3, Heart, Mail, MailOpen, Plus, Send, Trash2 } from 'lucide-react'
+import InlineEditableText from '../components/InlineEditableText'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
 import { siteConfig } from '../data/siteConfig'
@@ -48,7 +49,7 @@ function MessageForm({ item, couple, onSave, onClose }) {
   )
 }
 
-export default function MessagesPage({ items, settings = siteConfig, addItem, updateItem, deleteItem }) {
+export default function MessagesPage({ items, settings = siteConfig, addItem, updateItem, deleteItem, pageText = siteConfig.pages.messages, pageEditing = false, onPageTextChange }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(undefined)
   const [openedLetters, setOpenedLetters] = useState([])
@@ -60,15 +61,17 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, up
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="LOVE LETTERS"
-        title="留言与情书"
-        description="有些话现在就想告诉你，有些话想留给未来的我们。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 写留言 / 信</button>}
       />
 
       <section className="message-section">
         <div className="section-heading compact">
-          <div><p className="eyebrow">NOTES FOR YOU</p><h2>给你的留言</h2></div>
+          <div><InlineEditableText as="p" className="eyebrow" value={pageText.notesEyebrow} editing={pageEditing} onChange={(value) => onPageTextChange('notesEyebrow', value)} ariaLabel="留言区英文标题" /><InlineEditableText as="h2" value={pageText.notesTitle} editing={pageEditing} onChange={(value) => onPageTextChange('notesTitle', value)} ariaLabel="留言区标题" /></div>
           <span className="message-count">{messages.length} 条心里话</span>
         </div>
         <div className="message-grid">
@@ -89,8 +92,8 @@ export default function MessagesPage({ items, settings = siteConfig, addItem, up
 
       <section className="letter-section">
         <div className="section-heading compact">
-          <div><p className="eyebrow">FUTURE MAILBOX</p><h2>未来信箱</h2></div>
-          <span className="handwritten-note">把期待寄给以后的我们。</span>
+          <div><InlineEditableText as="p" className="eyebrow" value={pageText.mailboxEyebrow} editing={pageEditing} onChange={(value) => onPageTextChange('mailboxEyebrow', value)} ariaLabel="未来信箱英文标题" /><InlineEditableText as="h2" value={pageText.mailboxTitle} editing={pageEditing} onChange={(value) => onPageTextChange('mailboxTitle', value)} ariaLabel="未来信箱标题" /></div>
+          <InlineEditableText className="handwritten-note" value={pageText.mailboxNote} editing={pageEditing} onChange={(value) => onPageTextChange('mailboxNote', value)} ariaLabel="未来信箱小纸条" />
         </div>
         <div className="letter-grid">
           {letters.map((letter) => {

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { CalendarHeart, Edit3, Plus, RefreshCw, Trash2 } from 'lucide-react'
+import InlineEditableText from '../components/InlineEditableText'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { siteConfig } from '../data/siteConfig'
 import { countdownLabel, daysUntil, formatDate, nextOccurrence, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
 
@@ -36,7 +38,7 @@ function AnniversaryForm({ item, onSave, onClose }) {
   )
 }
 
-export default function AnniversariesPage({ items, addItem, updateItem, deleteItem }) {
+export default function AnniversariesPage({ items, addItem, updateItem, deleteItem, pageText = siteConfig.pages.anniversaries, pageEditing = false, onPageTextChange }) {
   const [editing, setEditing] = useState(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const decorated = items
@@ -53,9 +55,11 @@ export default function AnniversariesPage({ items, addItem, updateItem, deleteIt
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="SPECIAL DAYS"
-        title="纪念日"
-        description="重要的日子不用死记，它们会在这里温柔地提醒你。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 添加纪念日</button>}
       />
 
@@ -85,7 +89,7 @@ export default function AnniversariesPage({ items, addItem, updateItem, deleteIt
         ))}
       </section>
 
-      <div className="anniversary-tip"><CalendarHeart size={21} /> 每年重复的日期会自动计算下一次到来的时间。</div>
+      <div className="anniversary-tip"><CalendarHeart size={21} /> <InlineEditableText value={pageText.tip} editing={pageEditing} onChange={(value) => onPageTextChange('tip', value)} ariaLabel="纪念日提示文字" /></div>
 
       {modalOpen && (
         <Modal title={editing ? '编辑纪念日' : '添加纪念日'} onClose={() => setModalOpen(false)}>

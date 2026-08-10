@@ -5,6 +5,7 @@ import ContentPhotoField from '../components/ContentPhotoField'
 import EmptyState from '../components/EmptyState'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { siteConfig } from '../data/siteConfig'
 import { removePhoto, uploadContentPhoto } from '../services/photoStorage'
 import { formatDate, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
@@ -63,7 +64,7 @@ function DailyForm({ item, onSave, onClose }) {
   )
 }
 
-export default function DailyPage({ items, addItem, updateItem, deleteItem }) {
+export default function DailyPage({ items, addItem, updateItem, deleteItem, pageText = siteConfig.pages.daily, pageEditing = false, onPageTextChange }) {
   const [filterDate, setFilterDate] = useState('')
   const [editing, setEditing] = useState(undefined)
   const [modalOpen, setModalOpen] = useState(false)
@@ -77,9 +78,11 @@ export default function DailyPage({ items, addItem, updateItem, deleteItem }) {
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="EVERYDAY NOTES"
-        title="日常记录"
-        description="普通日子里的小事，回头看也会闪闪发光。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 写下今天</button>}
       />
 
@@ -89,7 +92,7 @@ export default function DailyPage({ items, addItem, updateItem, deleteItem }) {
       </div>
 
       {visibleItems.length === 0 ? (
-        <EmptyState title="这一天还没有记录" description="也许今天的一杯热饮、一次散步，就能成为以后想起时会微笑的瞬间。" />
+        <EmptyState title={pageText.emptyTitle} description={pageText.emptyDescription} editing={pageEditing} onTextChange={onPageTextChange} />
       ) : (
         <section className="daily-grid">
           {visibleItems.map((item, index) => (

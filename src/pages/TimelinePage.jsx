@@ -4,6 +4,7 @@ import CloudPhoto from '../components/CloudPhoto'
 import ContentPhotoField from '../components/ContentPhotoField'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { siteConfig } from '../data/siteConfig'
 import { removePhoto, uploadContentPhoto } from '../services/photoStorage'
 import { formatDate, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
@@ -60,7 +61,7 @@ function TimelineForm({ item, onSave, onClose }) {
   )
 }
 
-export default function TimelinePage({ items, addItem, updateItem, deleteItem }) {
+export default function TimelinePage({ items, addItem, updateItem, deleteItem, pageText = siteConfig.pages.timeline, pageEditing = false, onPageTextChange }) {
   const [editing, setEditing] = useState(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const sortedItems = [...items].sort((a, b) => a.date.localeCompare(b.date))
@@ -77,9 +78,11 @@ export default function TimelinePage({ items, addItem, updateItem, deleteItem })
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="OUR STORY"
-        title="时光轴"
-        description="从第一次心动开始，把重要瞬间一页一页收好。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 新增事件</button>}
       />
 

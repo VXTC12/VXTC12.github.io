@@ -26,6 +26,7 @@ export function normalizeSiteData(value) {
   const savedSettings = value.siteSettings ?? {}
   const savedCouple = savedSettings.couple ?? {}
   const savedHome = savedSettings.home ?? {}
+  const savedPages = savedSettings.pages ?? {}
   const relationshipStart = savedCouple.relationshipStart
     || relationshipDateFrom(value.anniversaries)
     || defaults.siteSettings.couple.relationshipStart
@@ -53,6 +54,10 @@ export function normalizeSiteData(value) {
         ...defaults.siteSettings.home,
         ...savedHome,
       },
+      pages: Object.fromEntries(Object.entries(defaults.siteSettings.pages).map(([page, pageDefaults]) => [
+        page,
+        { ...pageDefaults, ...(savedPages[page] ?? {}) },
+      ])),
     },
   }
 }

@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react'
 import { Camera, Edit3, Heart, LoaderCircle, Plus, Trash2, X } from 'lucide-react'
 import CloudPhoto from '../components/CloudPhoto'
 import ContentPhotoField from '../components/ContentPhotoField'
+import InlineEditableText from '../components/InlineEditableText'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { siteConfig } from '../data/siteConfig'
 import { removePhoto, uploadContentPhoto } from '../services/photoStorage'
 import { createId } from '../utils/id'
 
@@ -68,7 +70,7 @@ function GalleryForm({ item, onSave, onClose }) {
   )
 }
 
-export default function GalleryPage({ items, addItem, updateItem, deleteItem }) {
+export default function GalleryPage({ items, addItem, updateItem, deleteItem, pageText = siteConfig.pages.gallery, pageEditing = false, onPageTextChange }) {
   const [category, setCategory] = useState('全部')
   const [year, setYear] = useState('全部年份')
   const [selected, setSelected] = useState(null)
@@ -94,9 +96,11 @@ export default function GalleryPage({ items, addItem, updateItem, deleteItem }) 
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="PHOTO ALBUM"
-        title="情侣相册"
-        description="照片留住样子，故事留住当时的心情。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 添加照片</button>}
       />
 
@@ -131,7 +135,7 @@ export default function GalleryPage({ items, addItem, updateItem, deleteItem }) 
       </section>
 
       {visibleItems.length === 0 && (
-        <div className="empty-state"><Camera size={30} /><h3>这个分类还没有照片</h3><p>点“添加照片”，把新的回忆放进这里吧。</p></div>
+        <div className="empty-state"><Camera size={30} /><InlineEditableText as="h3" value={pageText.emptyTitle} editing={pageEditing} onChange={(value) => onPageTextChange('emptyTitle', value)} ariaLabel="相册空状态标题" /><InlineEditableText as="p" value={pageText.emptyDescription} editing={pageEditing} onChange={(value) => onPageTextChange('emptyDescription', value)} ariaLabel="相册空状态说明" /></div>
       )}
 
       {selected && (
@@ -140,7 +144,7 @@ export default function GalleryPage({ items, addItem, updateItem, deleteItem }) 
             <CloudPhoto path={selected.imagePath} fallback={selected.image} alt={selected.title} />
             <div>
               <p className="eyebrow">{selected.year} · {selected.category}</p>
-              <h3>照片背后的故事</h3>
+              <InlineEditableText as="h3" value={pageText.storyTitle} editing={pageEditing} onChange={(value) => onPageTextChange('storyTitle', value)} ariaLabel="照片故事标题" />
               <p>{selected.story}</p>
               <div className="photo-story-actions">
                 <button type="button" className="button secondary" onClick={() => openEdit(selected)}><Edit3 size={17} /> 编辑照片</button>

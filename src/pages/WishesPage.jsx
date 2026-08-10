@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle2, CircleDashed, Edit3, MapPin, Plus, Sparkles, Trash2 } from 'lucide-react'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { siteConfig } from '../data/siteConfig'
 import { formatDate, todayInputValue } from '../utils/date'
 import { createId } from '../utils/id'
 
@@ -55,7 +56,7 @@ function WishForm({ item, onSave, onClose }) {
   )
 }
 
-export default function WishesPage({ items, addItem, updateItem, deleteItem }) {
+export default function WishesPage({ items, addItem, updateItem, deleteItem, pageText = siteConfig.pages.wishes, pageEditing = false, onPageTextChange }) {
   const [editing, setEditing] = useState(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const [filter, setFilter] = useState('all')
@@ -76,9 +77,11 @@ export default function WishesPage({ items, addItem, updateItem, deleteItem }) {
   return (
     <div className="page-container">
       <PageHeader
-        eyebrow="OUR WISH LIST"
-        title="心愿清单"
-        description="把“有一天”写下来，然后一起把它变成“这一天”。"
+        eyebrow={pageText.eyebrow}
+        title={pageText.title}
+        description={pageText.description}
+        editing={pageEditing}
+        onTextChange={onPageTextChange}
         action={<button type="button" className="button primary" onClick={openNew}><Plus size={18} /> 新增心愿</button>}
       />
 

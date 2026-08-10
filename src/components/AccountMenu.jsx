@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Camera, LoaderCircle, LogOut, Settings2 } from 'lucide-react'
+import { Camera, LoaderCircle, LogOut, PencilLine, Settings2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { removePhoto, signedPhotoUrl, uploadAccountAvatar } from '../services/photoStorage'
 
@@ -7,7 +7,7 @@ function accountInitial(email) {
   return email?.trim().charAt(0).toUpperCase() || '♡'
 }
 
-export default function AccountMenu({ user, onOpenAdmin, onSignOut }) {
+export default function AccountMenu({ user, onOpenAdmin, onStartPageEdit, pageEditing, onSignOut }) {
   const menuRef = useRef(null)
   const fileInputRef = useRef(null)
   const [open, setOpen] = useState(false)
@@ -125,8 +125,11 @@ export default function AccountMenu({ user, onOpenAdmin, onSignOut }) {
             accept="image/jpeg,image/png,image/webp,image/gif"
             onChange={handleAvatarUpload}
           />
+          <button type="button" className="account-action account-admin" onClick={() => { setOpen(false); onStartPageEdit() }} disabled={pageEditing}>
+            <PencilLine size={17} />{pageEditing ? '正在直接编辑页面' : '直接编辑页面文字'}
+          </button>
           <button type="button" className="account-action account-admin" onClick={() => { setOpen(false); onOpenAdmin() }}>
-            <Settings2 size={17} />管理网站内容
+            <Settings2 size={17} />管理头像与日期
           </button>
           <button
             type="button"

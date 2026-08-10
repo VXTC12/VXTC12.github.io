@@ -23,7 +23,7 @@ const navigationItems = [
   { id: 'messages', label: '留言', icon: MessageCircleHeart },
 ]
 
-export default function Navigation({ activePage, onNavigate, data, onImport, user, siteSettings, syncStatus, onOpenAdmin, onSignOut }) {
+export default function Navigation({ activePage, onNavigate, data, onImport, user, siteSettings, syncStatus, onOpenAdmin, onStartPageEdit, pageEditing, onSignOut }) {
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
 
@@ -52,7 +52,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
             <SyncIcon className={syncStatus === 'saving' || syncStatus === 'loading' ? 'spin' : ''} size={16} />
             <span>{syncLabel}</span>
           </span>
-          <AccountMenu user={user} onOpenAdmin={onOpenAdmin} onSignOut={onSignOut} />
+          <AccountMenu user={user} onOpenAdmin={onOpenAdmin} onStartPageEdit={onStartPageEdit} pageEditing={pageEditing} onSignOut={onSignOut} />
         </div>
       </header>
 

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import AdminSettingsModal from './components/AdminSettingsModal'
 import AuthGate from './components/AuthGate'
+import InlineEditableText from './components/InlineEditableText'
 import Navigation from './components/Navigation'
+import PageEditToolbar from './components/PageEditToolbar'
 import { siteConfig } from './data/siteConfig'
 import { normalizeSiteData, usePersistentData } from './hooks/usePersistentData'
 import AnniversariesPage from './pages/AnniversariesPage'
@@ -28,6 +30,12 @@ function settingsWithRelationshipDate(settings, date) {
   }
 }
 
+function updateNestedValue(source, path, value) {
+  const [key, ...rest] = path
+  if (rest.length === 0) return { ...source, [key]: value }
+  return { ...source, [key]: updateNestedValue(source[key] ?? {}, rest, value) }
+}
+
 function pageFromHash() {
   const hash = window.location.hash.replace('#/', '')
   return pageIds.has(hash) ? hash : 'home'
@@ -37,7 +45,10 @@ function SiteApp({ session, onSignOut }) {
   const [data, setData, { syncStatus, syncError }] = usePersistentData(session.user.id)
   const [activePage, setActivePage] = useState(pageFromHash)
   const [adminOpen, setAdminOpen] = useState(false)
+  const [pageEditing, setPageEditing] = useState(false)
+  const [editingSettings, setEditingSettings] = useState(null)
   const settings = data.siteSettings ?? siteConfig
+  const displayedSettings = pageEditing && editingSettings ? editingSettings : settings
 
   useEffect(() => {
     const handleHashChange = () => setActivePage(pageFromHash())
@@ -46,8 +57,8 @@ function SiteApp({ session, onSignOut }) {
   }, [])
 
   useEffect(() => {
-    document.title = settings.siteName
-  }, [settings.siteName])
+    document.title = displayedSettings.siteName
+  }, [displayedSettings.siteName])
 
   const navigate = useCallback((page) => {
     window.location.hash = `/${page}`
@@ -105,15 +116,41 @@ function SiteApp({ session, onSignOut }) {
     })
   }
 
+  const startPageEditing = () => {
+    setEditingSettings(JSON.parse(JSON.stringify(settings)))
+    setPageEditing(true)
+  }
+
+  const updateSettingsText = (path, value) => {
+    setEditingSettings((current) => updateNestedValue(current ?? settings, path, value))
+  }
+
+  const savePageEditing = () => {
+    if (editingSettings) saveSiteSettings(editingSettings)
+    setPageEditing(false)
+    setEditingSettings(null)
+  }
+
+  const cancelPageEditing = () => {
+    setPageEditing(false)
+    setEditingSettings(null)
+  }
+
+  const pageTextProps = (page) => ({
+    pageText: displayedSettings.pages[page],
+    pageEditing,
+    onPageTextChange: (field, value) => updateSettingsText(['pages', page, field], value),
+  })
+
   const sharedActions = { addItem, updateItem, deleteItem }
   const pages = {
-    home: <HomePage data={data} settings={settings} onNavigate={navigate} onHeroPhotoUploaded={(path) => setData((current) => ({ ...current, heroPhotoPath: path }))} />,
-    timeline: <TimelinePage items={data.timeline} {...sharedActions} />,
-    daily: <DailyPage items={data.daily} {...sharedActions} />,
-    gallery: <GalleryPage items={data.gallery} {...sharedActions} />,
-    wishes: <WishesPage items={data.wishes} {...sharedActions} />,
-    anniversaries: <AnniversariesPage items={data.anniversaries} {...sharedActions} />,
-    messages: <MessagesPage items={data.messages} settings={settings} {...sharedActions} />,
+    home: <HomePage data={data} settings={displayedSettings} onNavigate={navigate} onHeroPhotoUploaded={(path) => setData((current) => ({ ...current, heroPhotoPath: path }))} pageEditing={pageEditing} onSettingsTextChange={updateSettingsText} />,
+    timeline: <TimelinePage items={data.timeline} {...sharedActions} {...pageTextProps('timeline')} />,
+    daily: <DailyPage items={data.daily} {...sharedActions} {...pageTextProps('daily')} />,
+    gallery: <GalleryPage items={data.gallery} {...sharedActions} {...pageTextProps('gallery')} />,
+    wishes: <WishesPage items={data.wishes} {...sharedActions} {...pageTextProps('wishes')} />,
+    anniversaries: <AnniversariesPage items={data.anniversaries} {...sharedActions} {...pageTextProps('anniversaries')} />,
+    messages: <MessagesPage items={data.messages} settings={displayedSettings} {...sharedActions} {...pageTextProps('messages')} />,
   }
 
   return (
@@ -124,17 +161,20 @@ function SiteApp({ session, onSignOut }) {
         data={data}
         onImport={(imported) => setData(normalizeSiteData(imported))}
         user={session.user}
-        siteSettings={settings}
+        siteSettings={displayedSettings}
         syncStatus={syncStatus}
-        onOpenAdmin={() => setAdminOpen(true)}
+        onOpenAdmin={() => { cancelPageEditing(); setAdminOpen(true) }}
+        onStartPageEdit={startPageEditing}
+        pageEditing={pageEditing}
         onSignOut={onSignOut}
       />
       {syncError && <div className="sync-banner" role="status">{syncError}</div>}
       <main className="site-main" key={activePage}>{pages[activePage]}</main>
       <footer className="site-footer">
-        <span aria-hidden="true">♡</span> {settings.footerText}
+        <span aria-hidden="true">♡</span> <InlineEditableText value={displayedSettings.footerText} editing={pageEditing} onChange={(value) => updateSettingsText(['footerText'], value)} ariaLabel="页脚文字" />
         <small>登录后的记录会保存到私有云端，也建议定期导出备份。</small>
       </footer>
+      {pageEditing && <PageEditToolbar onSave={savePageEditing} onCancel={cancelPageEditing} />}
       {adminOpen && (
         <AdminSettingsModal
           settings={settings}

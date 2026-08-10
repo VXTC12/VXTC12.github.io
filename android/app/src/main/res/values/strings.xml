@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">YG嘻嘻站</string>
+    <string name="title_activity_main">YG嘻嘻站</string>
+    <string name="package_name">com.yg1224.littleworld</string>
+    <string name="custom_url_scheme">com.yg1224.littleworld</string>
+</resources>
