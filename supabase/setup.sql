@@ -10,6 +10,20 @@ create table if not exists public.site_data (
 
 alter table public.site_data enable row level security;
 
+-- 让两个已登录设备在内容变化时立即收到更新；重复运行本文件也不会报错。
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'site_data'
+  ) then
+    execute 'alter publication supabase_realtime add table public.site_data';
+  end if;
+end $$;
+
 drop policy if exists "couple can read site data" on public.site_data;
 create policy "couple can read site data"
 on public.site_data for select

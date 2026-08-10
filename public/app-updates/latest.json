@@ -1,9 +1,9 @@
 {
-    "version":  "1.2.1",
-    "versionCode":  4,
+    "version":  "1.3.0",
+    "versionCode":  5,
     "downloadUrl":  "https://yg1224.com/app-updates/YG-Little-World-latest.apk",
-    "notes":  "地图现在只需任意一人共享位置即可显示；双方都有位置后自动增加连线和距离。",
-    "publishedAt":  "2026-08-10T08:34:48.9435645Z",
-    "size":  14182745,
-    "sha256":  "bef649785f991f067f06db11bf7662b94eb199390010ce815d731f73cc52efbd"
+    "notes":  "新增双设备即时同步：添加心愿等内容后，对方打开网站或 APP 时会立即更新并收到顶部提醒。",
+    "publishedAt":  "2026-08-10T08:42:05.2664232Z",
+    "size":  14183721,
+    "sha256":  "e0fd26270ff3ceb5b558fc6acfd854fa46c97ccf23b756c5f46996b06066471f"
 }

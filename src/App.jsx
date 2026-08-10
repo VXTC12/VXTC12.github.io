@@ -46,7 +46,12 @@ function pageFromHash() {
 }
 
 function SiteApp({ session, onSignOut }) {
-  const [data, setData, { syncStatus, syncError }] = usePersistentData(session.user.id)
+  const [data, setData, {
+    syncStatus,
+    syncError,
+    remoteNotice,
+    clearRemoteNotice,
+  }] = usePersistentData(session.user.id)
   const [activePage, setActivePage] = useState(pageFromHash)
   const [adminOpen, setAdminOpen] = useState(false)
   const [analyticsOpen, setAnalyticsOpen] = useState(false)
@@ -200,6 +205,14 @@ function SiteApp({ session, onSignOut }) {
           <span>发现新版本 v{availableUpdate.version}</span>
           <button type="button" onClick={() => setUpdateOpen(true)}>查看并更新</button>
           <button type="button" className="app-update-dismiss" onClick={() => setAvailableUpdate(null)} aria-label="暂时关闭更新提醒">×</button>
+        </div>
+      )}
+      {remoteNotice && (
+        <div className="live-sync-banner" role="status">
+          <span aria-hidden="true">♡</span>
+          <strong>{remoteNotice.message}</strong>
+          <button type="button" onClick={() => { navigate(remoteNotice.page); clearRemoteNotice() }}>立即查看</button>
+          <button type="button" className="live-sync-dismiss" onClick={clearRemoteNotice} aria-label="关闭同步提醒">×</button>
         </div>
       )}
       <main className="site-main" key={activePage}>{pages[activePage]}</main>
