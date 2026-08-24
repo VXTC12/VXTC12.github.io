@@ -7,6 +7,7 @@ import {
   LoaderCircle,
   MessageCircleHeart,
   NotebookTabs,
+  SquareTerminal,
   Cloud,
   CloudOff,
 } from 'lucide-react'
@@ -21,6 +22,7 @@ const navigationItems = [
   { id: 'wishes', label: '心愿', icon: ListChecks },
   { id: 'anniversaries', label: '纪念日', icon: CalendarHeart },
   { id: 'messages', label: '留言', icon: MessageCircleHeart },
+  { id: 'dsh', label: 'DSH', icon: SquareTerminal, href: 'https://dsh.yg1224.com' },
 ]
 
 export default function Navigation({ activePage, onNavigate, data, onImport, user, siteSettings, syncStatus, onOpenAdmin, onOpenAnalytics, onOpenPermissions, onOpenUpdate, onStartPageEdit, pageEditing, onSignOut }) {
@@ -35,7 +37,11 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
           <span>{siteSettings.siteName}</span>
         </button>
         <nav className="desktop-nav" aria-label="主要导航">
-          {navigationItems.map(({ id, label }) => (
+          {navigationItems.map(({ id, label, href }) => href ? (
+            <a key={id} href={href} target="_blank" rel="noreferrer" title="在新页面打开 DSH">
+              {label}
+            </a>
+          ) : (
             <button
               type="button"
               key={id}
@@ -57,7 +63,12 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
       </header>
 
       <nav className="mobile-nav" aria-label="手机端主要导航">
-        {navigationItems.map(({ id, label, icon: Icon }) => (
+        {navigationItems.map(({ id, label, icon: Icon, href }) => href ? (
+          <a key={id} href={href} target="_blank" rel="noreferrer" title="在新页面打开 DSH">
+            <Icon size={19} strokeWidth={1.8} />
+            <span>{label}</span>
+          </a>
+        ) : (
           <button
             type="button"
             key={id}
