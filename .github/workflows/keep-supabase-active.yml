@@ -1,0 +1,47 @@
+name: Keep Supabase project active
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 0,8,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Run a minimal database query
+        shell: bash
+        run: |
+          node <<'NODE'
+          const siteUrl = 'https://yg1224.com'
+          const page = await fetch(siteUrl)
+          if (!page.ok) throw new Error(`Website returned HTTP ${page.status}`)
+
+          const html = await page.text()
+          const assetPath = html.match(/<script[^>]+src="([^"]*\/assets\/index-[^"]+\.js)"/)?.[1]
+          if (!assetPath) throw new Error('Could not locate the deployed JavaScript bundle')
+
+          const bundleResponse = await fetch(new URL(assetPath, siteUrl))
+          if (!bundleResponse.ok) throw new Error(`JavaScript bundle returned HTTP ${bundleResponse.status}`)
+          const bundle = await bundleResponse.text()
+
+          const supabaseUrl = bundle.match(/https:\/\/[a-z0-9]+\.supabase\.co/)?.[0]
+          const publishableKey = bundle.match(/sb_publishable_[A-Za-z0-9_-]+/)?.[0]
+          if (!supabaseUrl || !publishableKey) throw new Error('Could not locate the public Supabase configuration')
+          console.log(`::add-mask::${publishableKey}`)
+
+          const response = await fetch(`${supabaseUrl}/rest/v1/site_data?select=id&limit=1`, {
+            headers: {
+              apikey: publishableKey,
+              Authorization: `Bearer ${publishableKey}`,
+            },
+          })
+          if (!response.ok) throw new Error(`Supabase keepalive returned HTTP ${response.status}`)
+          console.log(`Supabase keepalive succeeded at ${new Date().toISOString()}`)
+          NODE
