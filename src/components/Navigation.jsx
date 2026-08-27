@@ -35,8 +35,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
     const form = document.createElement('form')
     form.method = 'POST'
     form.action = 'https://dsh.yg1224.com/__dsh/sso'
-    form.target = '_blank'
-    form.rel = 'noopener noreferrer'
+    form.target = '_self'
     form.hidden = true
 
     const token = document.createElement('input')
