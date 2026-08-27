@@ -1,5 +1,9 @@
-import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
+import {
+  DefaultWebViewOptions,
+  InAppBrowser,
+  ToolbarPosition,
+} from '@capacitor/inappbrowser'
 
 const DSH_ORIGIN = 'https://dsh.yg1224.com'
 
@@ -39,7 +43,31 @@ async function openNativeDsh(accessToken) {
     throw new Error('DSH 返回了无效的打开地址。')
   }
 
-  await Browser.open({ url: launchUrl.href, presentationStyle: 'fullscreen' })
+  await InAppBrowser.openInWebView({
+    url: launchUrl.href,
+    options: {
+      ...DefaultWebViewOptions,
+      showURL: false,
+      clearCache: false,
+      clearSessionCache: false,
+      closeButtonText: '返回小世界',
+      toolbarPosition: ToolbarPosition.TOP,
+      showNavigationButtons: true,
+      android: {
+        ...DefaultWebViewOptions.android,
+        allowZoom: true,
+        hardwareBack: true,
+        pauseMedia: true,
+        isIsolated: true,
+      },
+      iOS: {
+        ...DefaultWebViewOptions.iOS,
+        enableViewportScale: true,
+        allowInLineMediaPlayback: true,
+        allowsBackForwardNavigationGestures: true,
+      },
+    },
+  })
 }
 
 export async function openDsh(accessToken) {

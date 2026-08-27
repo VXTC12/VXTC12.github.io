@@ -1,9 +1,9 @@
 {
-    "version":  "1.5.1",
-    "versionCode":  8,
+    "version":  "1.5.2",
+    "versionCode":  9,
     "downloadUrl":  "https://yg1224.com/app-updates/YG-Little-World-latest.apk",
-    "notes":  "修复安卓 APP 缺少登录配置的问题；保留 DSH 安全跳转、手机上传文件和新建工作区功能。",
-    "publishedAt":  "2026-08-27T11:52:04.6213052Z",
-    "size":  14537672,
-    "sha256":  "fd2d356149eeb4dc60afcc41ffb597405d6b7a54a10a9d546501db6d5a0f0f41"
+    "notes":  "DSH 改为在 APP 内置安全窗口打开，保留返回按钮、文件上传和新建工作区功能。",
+    "publishedAt":  "2026-08-27T16:19:44.8405563Z",
+    "size":  21347649,
+    "sha256":  "c2f7aba2e0d7afcfd39899b4033e191ead27c3d47515ca6596a53a606c09bd8d"
 }
