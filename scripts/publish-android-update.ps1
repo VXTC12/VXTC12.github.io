@@ -21,7 +21,19 @@ if (-not $versionCodeMatch.Success) {
 New-Item -ItemType Directory -Path $updateDirectory -Force | Out-Null
 Copy-Item -LiteralPath $sourceApk -Destination $targetApk -Force
 $file = Get-Item -LiteralPath $targetApk
-$hash = (Get-FileHash -LiteralPath $targetApk -Algorithm SHA256).Hash.ToLowerInvariant()
+$stream = [System.IO.File]::OpenRead($targetApk)
+try {
+  $sha256 = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    $hash = ([System.BitConverter]::ToString($sha256.ComputeHash($stream)) -replace '-', '').ToLowerInvariant()
+  }
+  finally {
+    $sha256.Dispose()
+  }
+}
+finally {
+  $stream.Dispose()
+}
 $existing = if (Test-Path -LiteralPath $manifestPath) {
   [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 } else {

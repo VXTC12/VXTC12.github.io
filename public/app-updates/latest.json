@@ -1,9 +1,9 @@
 {
-    "version":  "1.4.0",
-    "versionCode":  6,
+    "version":  "1.5.0",
+    "versionCode":  7,
     "downloadUrl":  "https://yg1224.com/app-updates/YG-Little-World-latest.apk",
-    "notes":  "新增账号昵称与头像自定义，并加入首次启动权限引导；资料会同步到账号和共享位置头像。",
-    "publishedAt":  "2026-08-10T08:55:19.3756412Z",
-    "size":  14185217,
-    "sha256":  "f0603ec95cb56b36ab827a03489bc159c9ebf4110a681a6fc5f350591250c446"
+    "notes":  "修复手机 APP 无法直接打开 DSH；登录后可安全跳转，并可在 DSH 内新建文件夹和工作区。",
+    "publishedAt":  "2026-08-27T11:18:54.6581906Z",
+    "size":  14485440,
+    "sha256":  "223a3bdb4fe17465f7a7812717ab1f1c243153b18444560d93cb340a722d8f41"
 }
