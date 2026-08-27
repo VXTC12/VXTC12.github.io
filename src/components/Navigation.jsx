@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import AccountMenu from './AccountMenu'
 import BackupControls from './BackupControls'
+import { openDsh } from '../services/dshAccess'
 
 const navigationItems = [
   { id: 'home', label: '首页', icon: Home },
@@ -29,24 +30,10 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
 
-  const openDsh = () => {
-    if (!dshAccessToken) return
-
-    const form = document.createElement('form')
-    form.method = 'POST'
-    form.action = 'https://dsh.yg1224.com/__dsh/sso'
-    form.target = '_self'
-    form.hidden = true
-
-    const token = document.createElement('input')
-    token.type = 'hidden'
-    token.name = 'access_token'
-    token.value = dshAccessToken
-    form.append(token)
-
-    document.body.append(form)
-    form.submit()
-    form.remove()
+  const handleOpenDsh = () => {
+    openDsh(dshAccessToken).catch((error) => {
+      window.alert(error?.message || '暂时无法打开 DSH，请稍后再试。')
+    })
   }
 
   return (
@@ -58,7 +45,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
         </button>
         <nav className="desktop-nav" aria-label="主要导航">
           {navigationItems.map(({ id, label, external }) => external ? (
-            <button key={id} type="button" onClick={openDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
+            <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
               {label}
             </button>
           ) : (
@@ -84,7 +71,7 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
 
       <nav className="mobile-nav" aria-label="手机端主要导航">
         {navigationItems.map(({ id, label, icon: Icon, external }) => external ? (
-          <button key={id} type="button" onClick={openDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
+          <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
             <Icon size={19} strokeWidth={1.8} />
             <span>{label}</span>
           </button>
