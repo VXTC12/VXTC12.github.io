@@ -779,3 +779,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   .person-card { flex-direction: column; padding: 5px 8px; border-radius: 15px; }
   .letter-card { grid-template-columns: 1fr; }
 }
+.pwa-install { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 80; width: min(92vw, 560px); transform: translateX(-50%); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 42px 14px 14px; border: 1px solid #ead8ca; border-radius: 20px; background: rgba(255,250,244,.97); box-shadow: 0 16px 45px rgba(80,58,49,.18); backdrop-filter: blur(12px); }
+.pwa-install__icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; color: #fff; background: var(--rose); }
+.pwa-install strong { color: var(--coffee); }
+.pwa-install p { display: flex; align-items: center; gap: 5px; margin: 3px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.45; }
+.pwa-install__button { border: 0; border-radius: 12px; padding: 9px 13px; color: #fff; background: var(--rose); font-weight: 700; }
+.pwa-install__close { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; color: var(--muted); background: transparent; }
+
+@media (min-width: 900px) {
+  .pwa-install { bottom: 26px; }
+}
+
+@media (max-width: 520px) {
+  .pwa-install { grid-template-columns: auto minmax(0, 1fr); }
+  .pwa-install__button { grid-column: 1 / -1; width: 100%; }
+}

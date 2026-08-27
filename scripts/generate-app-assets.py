@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "resources" / "app-icon-source.png"
 ANDROID_RES = ROOT / "android" / "app" / "src" / "main" / "res"
 IOS_ASSETS = ROOT / "ios" / "App" / "App" / "Assets.xcassets"
+PUBLIC_IMAGES = ROOT / "public" / "images"
 
 CREAM = "#FFF7EC"
 COFFEE = "#503A31"
@@ -107,8 +108,15 @@ def generate_ios_icon() -> None:
     )
 
 
+def generate_pwa_icons() -> None:
+    PUBLIC_IMAGES.mkdir(parents=True, exist_ok=True)
+    for size in (192, 512):
+        fitted_source((size, size)).save(PUBLIC_IMAGES / f"pwa-icon-{size}.png", optimize=True)
+
+
 if __name__ == "__main__":
     generate_android_icons()
     generate_ios_icon()
     generate_splashes()
+    generate_pwa_icons()
     print("Generated Android and iOS app icons and splash screens.")

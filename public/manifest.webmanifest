@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "YG嘻嘻站",
+  "short_name": "YG嘻嘻站",
+  "description": "只属于两个人的恋爱纪念小世界",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff7ec",
+  "theme_color": "#f7f0e5",
+  "icons": [
+    {
+      "src": "/images/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import InlineEditableText from './components/InlineEditableText'
 import Navigation from './components/Navigation'
 import PageEditToolbar from './components/PageEditToolbar'
 import PermissionWelcomeModal from './components/PermissionWelcomeModal'
+import PwaInstallPrompt from './components/PwaInstallPrompt'
 import { siteConfig } from './data/siteConfig'
 import { normalizeSiteData, usePersistentData } from './hooks/usePersistentData'
 import useAnalyticsTracking from './hooks/useAnalyticsTracking'
@@ -229,6 +230,7 @@ function SiteApp({ session, onSignOut }) {
       {analyticsOpen && <AnalyticsDashboardModal user={session.user} onClose={() => setAnalyticsOpen(false)} />}
       {updateOpen && <AppUpdateModal initialUpdate={availableUpdate} onClose={() => setUpdateOpen(false)} />}
       {permissionOpen && <PermissionWelcomeModal onClose={() => setPermissionOpen(false)} />}
+      <PwaInstallPrompt />
       {adminOpen && (
         <AdminSettingsModal
           settings={settings}
