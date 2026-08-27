@@ -193,6 +193,7 @@ function SiteApp({ session, onSignOut }) {
         data={data}
         onImport={(imported) => setData(normalizeSiteData(imported))}
         user={session.user}
+        dshAccessToken={session.access_token}
         siteSettings={displayedSettings}
         syncStatus={syncStatus}
         onOpenAdmin={() => { cancelPageEditing(); setAdminOpen(true) }}

@@ -22,12 +22,33 @@ const navigationItems = [
   { id: 'wishes', label: '心愿', icon: ListChecks },
   { id: 'anniversaries', label: '纪念日', icon: CalendarHeart },
   { id: 'messages', label: '留言', icon: MessageCircleHeart },
-  { id: 'dsh', label: 'DSH', icon: SquareTerminal, href: 'https://dsh.yg1224.com' },
+  { id: 'dsh', label: 'DSH', icon: SquareTerminal, external: true },
 ]
 
-export default function Navigation({ activePage, onNavigate, data, onImport, user, siteSettings, syncStatus, onOpenAdmin, onOpenAnalytics, onOpenPermissions, onOpenUpdate, onStartPageEdit, pageEditing, onSignOut }) {
+export default function Navigation({ activePage, onNavigate, data, onImport, user, dshAccessToken, siteSettings, syncStatus, onOpenAdmin, onOpenAnalytics, onOpenPermissions, onOpenUpdate, onStartPageEdit, pageEditing, onSignOut }) {
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
+
+  const openDsh = () => {
+    if (!dshAccessToken) return
+
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = 'https://dsh.yg1224.com/__dsh/sso'
+    form.target = '_blank'
+    form.rel = 'noopener noreferrer'
+    form.hidden = true
+
+    const token = document.createElement('input')
+    token.type = 'hidden'
+    token.name = 'access_token'
+    token.value = dshAccessToken
+    form.append(token)
+
+    document.body.append(form)
+    form.submit()
+    form.remove()
+  }
 
   return (
     <>
@@ -37,10 +58,10 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
           <span>{siteSettings.siteName}</span>
         </button>
         <nav className="desktop-nav" aria-label="主要导航">
-          {navigationItems.map(({ id, label, href }) => href ? (
-            <a key={id} href={href} target="_blank" rel="noreferrer" title="在新页面打开 DSH">
+          {navigationItems.map(({ id, label, external }) => external ? (
+            <button key={id} type="button" onClick={openDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
               {label}
-            </a>
+            </button>
           ) : (
             <button
               type="button"
@@ -63,11 +84,11 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
       </header>
 
       <nav className="mobile-nav" aria-label="手机端主要导航">
-        {navigationItems.map(({ id, label, icon: Icon, href }) => href ? (
-          <a key={id} href={href} target="_blank" rel="noreferrer" title="在新页面打开 DSH">
+        {navigationItems.map(({ id, label, icon: Icon, external }) => external ? (
+          <button key={id} type="button" onClick={openDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
             <Icon size={19} strokeWidth={1.8} />
             <span>{label}</span>
-          </a>
+          </button>
         ) : (
           <button
             type="button"

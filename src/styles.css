@@ -40,7 +40,7 @@ button, select { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .68; }
 img { display: block; max-width: 100%; }
 h1, h2, h3, p, figure { margin-top: 0; }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline: 3px solid rgba(185,101,112,.3); outline-offset: 2px;
 }
 
@@ -87,11 +87,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   color: var(--paper); background: var(--rose); box-shadow: 0 5px 13px rgba(185,101,112,.25);
 }
 .desktop-nav { display: flex; justify-content: center; gap: 2px; }
-.desktop-nav button, .desktop-nav a {
+.desktop-nav button {
   position: relative; padding: 10px 12px; border: 0; border-radius: 12px;
-  background: transparent; color: var(--coffee-soft); font-size: 14px; text-decoration: none; transition: 180ms ease;
+  background: transparent; color: var(--coffee-soft); font-size: 14px; transition: 180ms ease;
 }
-.desktop-nav button:hover, .desktop-nav button.active, .desktop-nav a:hover { color: var(--rose-dark); background: var(--blush-light); }
+.desktop-nav button:hover, .desktop-nav button.active { color: var(--rose-dark); background: var(--blush-light); }
 .desktop-nav button.active::after {
   position: absolute; right: 12px; bottom: 4px; left: 12px; height: 2px;
   border-radius: 9px; background: var(--rose); content: "";
@@ -624,7 +624,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 @media (max-width: 1080px) {
   .site-header { gap: 12px; padding-inline: 22px; }
-  .desktop-nav button, .desktop-nav a { padding-inline: 8px; }
+  .desktop-nav button { padding-inline: 8px; }
   .backup-controls .text-button { width: 38px; font-size: 0; }
   .backup-controls .text-button svg { width: 18px; height: 18px; }
   .sync-state span { display: none; }
@@ -645,11 +645,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     border-top: 1px solid rgba(94,68,56,.13); background: rgba(255,250,242,.96);
     box-shadow: 0 -8px 24px rgba(73,53,45,.08); backdrop-filter: blur(16px);
   }
-  .mobile-nav button, .mobile-nav a {
+  .mobile-nav button {
     min-width: 0; min-height: 50px; display: grid; place-items: center; align-content: center; gap: 3px;
-    padding: 3px 1px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); text-decoration: none;
+    padding: 3px 1px; border: 0; border-radius: 10px; background: transparent; color: var(--muted);
   }
-  .mobile-nav button span, .mobile-nav a span { max-width: 100%; overflow: hidden; font-size: 10px; line-height: 1.1; white-space: nowrap; }
+  .mobile-nav button span { max-width: 100%; overflow: hidden; font-size: 10px; line-height: 1.1; white-space: nowrap; }
   .mobile-nav button.active { color: var(--rose-dark); background: var(--blush-light); }
   .site-main, .site-footer { width: min(100% - 28px,720px); }
   .hero-section { min-height: auto; grid-template-columns: 1fr; gap: 44px; padding: 48px 38px 56px; }
@@ -774,7 +774,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .brand-mark { width: 31px; height: 31px; }
   .backup-controls { gap: 1px; }
   .backup-controls .text-button { width: 33px; padding-inline: 5px; }
-  .mobile-nav button span, .mobile-nav a span { font-size: 9px; }
+  .mobile-nav button span { font-size: 9px; }
   .hero-copy h1 { font-size: 40px; }
   .person-card { flex-direction: column; padding: 5px 8px; border-radius: 15px; }
   .letter-card { grid-template-columns: 1fr; }
