@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yg-little-world-v1'
+const CACHE_NAME = 'yg-little-world-v2'
 const APP_SHELL = ['/', '/manifest.webmanifest', '/images/pwa-icon-192.png', '/images/pwa-icon-512.png']
 
 self.addEventListener('install', (event) => {

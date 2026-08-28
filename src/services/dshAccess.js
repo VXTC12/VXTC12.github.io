@@ -27,6 +27,10 @@ async function createLaunchUrl(accessToken) {
   })
 
   if (!response.ok) {
+    const result = await response.json().catch(() => ({}))
+    if (response.status === 403 && result.error === 'account_not_allowed') {
+      throw new Error('当前登录账号还没有 DSH 访问权限。')
+    }
     if (response.status === 401) throw new Error('登录状态已过期，请退出账号后重新登录。')
     if (response.status === 429) throw new Error('打开次数有点多，请稍等一会儿再试。')
     throw new Error('暂时无法打开 DSH，请确认电脑上的 DSH 正在运行。')
