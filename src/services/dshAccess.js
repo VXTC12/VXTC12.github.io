@@ -4,28 +4,22 @@ import {
   InAppBrowser,
   ToolbarPosition,
 } from '@capacitor/inappbrowser'
+import { supabase } from '../lib/supabase'
 
 const DSH_ORIGIN = 'https://dsh.yg1224.com'
 
-function openWebsiteDsh(accessToken) {
-  const form = document.createElement('form')
-  form.method = 'POST'
-  form.action = `${DSH_ORIGIN}/__dsh/sso`
-  form.target = '_self'
-  form.hidden = true
+async function getFreshAccessToken() {
+  if (!supabase) throw new Error('网站登录服务尚未配置。')
 
-  const token = document.createElement('input')
-  token.type = 'hidden'
-  token.name = 'access_token'
-  token.value = accessToken
-  form.append(token)
+  const { data, error } = await supabase.auth.refreshSession()
+  if (error || !data.session?.access_token) {
+    throw new Error('登录状态已过期，请退出账号后重新登录。')
+  }
 
-  document.body.append(form)
-  form.submit()
-  form.remove()
+  return data.session.access_token
 }
 
-async function openNativeDsh(accessToken) {
+async function createLaunchUrl(accessToken) {
   const response = await fetch(`${DSH_ORIGIN}/__dsh/sso-link`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
@@ -34,6 +28,7 @@ async function openNativeDsh(accessToken) {
 
   if (!response.ok) {
     if (response.status === 401) throw new Error('登录状态已过期，请退出账号后重新登录。')
+    if (response.status === 429) throw new Error('打开次数有点多，请稍等一会儿再试。')
     throw new Error('暂时无法打开 DSH，请确认电脑上的 DSH 正在运行。')
   }
 
@@ -43,6 +38,14 @@ async function openNativeDsh(accessToken) {
     throw new Error('DSH 返回了无效的打开地址。')
   }
 
+  return launchUrl
+}
+
+function openWebsiteDsh(launchUrl) {
+  window.location.assign(launchUrl.href)
+}
+
+async function openNativeDsh(launchUrl) {
   await InAppBrowser.openInWebView({
     url: launchUrl.href,
     options: {
@@ -70,9 +73,10 @@ async function openNativeDsh(accessToken) {
   })
 }
 
-export async function openDsh(accessToken) {
-  if (!accessToken) throw new Error('请先登录网站账号。')
-  if (Capacitor.isNativePlatform()) return openNativeDsh(accessToken)
-  openWebsiteDsh(accessToken)
+export async function openDsh() {
+  const accessToken = await getFreshAccessToken()
+  const launchUrl = await createLaunchUrl(accessToken)
+  if (Capacitor.isNativePlatform()) return openNativeDsh(launchUrl)
+  openWebsiteDsh(launchUrl)
   return undefined
 }

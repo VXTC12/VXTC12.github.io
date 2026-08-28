@@ -1,9 +1,9 @@
 {
-    "version":  "1.5.2",
-    "versionCode":  9,
+    "version":  "1.5.3",
+    "versionCode":  10,
     "downloadUrl":  "https://yg1224.com/app-updates/YG-Little-World-latest.apk",
-    "notes":  "DSH 改为在 APP 内置安全窗口打开，保留返回按钮、文件上传和新建工作区功能。",
-    "publishedAt":  "2026-08-27T16:19:44.8405563Z",
-    "size":  21347649,
-    "sha256":  "c2f7aba2e0d7afcfd39899b4033e191ead27c3d47515ca6596a53a606c09bd8d"
+    "notes":  "修复 iOS 主屏幕版和 APP 长时间挂起后 DSH 登录状态失效；每次打开前自动刷新安全会话。",
+    "publishedAt":  "2026-08-28T14:27:35.5743575Z",
+    "size":  21347681,
+    "sha256":  "5b8325e8020cfada0a015c0bd78c32a35ed888834b9e9c1f795f23f9a0a131da"
 }

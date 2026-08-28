@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   CalendarHeart,
   Camera,
@@ -27,13 +28,20 @@ const navigationItems = [
 ]
 
 export default function Navigation({ activePage, onNavigate, data, onImport, user, dshAccessToken, siteSettings, syncStatus, onOpenAdmin, onOpenAnalytics, onOpenPermissions, onOpenUpdate, onStartPageEdit, pageEditing, onSignOut }) {
+  const [dshOpening, setDshOpening] = useState(false)
   const SyncIcon = syncStatus === 'error' ? CloudOff : syncStatus === 'saving' || syncStatus === 'loading' ? LoaderCircle : Cloud
   const syncLabel = syncStatus === 'error' ? '仅本机保存' : syncStatus === 'saving' || syncStatus === 'loading' ? '同步中' : '已同步'
 
-  const handleOpenDsh = () => {
-    openDsh(dshAccessToken).catch((error) => {
+  const handleOpenDsh = async () => {
+    if (dshOpening) return
+    setDshOpening(true)
+    try {
+      await openDsh()
+    } catch (error) {
       window.alert(error?.message || '暂时无法打开 DSH，请稍后再试。')
-    })
+    } finally {
+      setDshOpening(false)
+    }
   }
 
   return (
@@ -45,8 +53,8 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
         </button>
         <nav className="desktop-nav" aria-label="主要导航">
           {navigationItems.map(({ id, label, external }) => external ? (
-            <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
-              {label}
+            <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken || dshOpening} title="使用当前账号打开 DSH">
+              {dshOpening ? '打开中…' : label}
             </button>
           ) : (
             <button
@@ -71,9 +79,9 @@ export default function Navigation({ activePage, onNavigate, data, onImport, use
 
       <nav className="mobile-nav" aria-label="手机端主要导航">
         {navigationItems.map(({ id, label, icon: Icon, external }) => external ? (
-          <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken} title="使用当前账号打开 DSH">
+          <button key={id} type="button" onClick={handleOpenDsh} disabled={!dshAccessToken || dshOpening} title="使用当前账号打开 DSH">
             <Icon size={19} strokeWidth={1.8} />
-            <span>{label}</span>
+            <span>{dshOpening ? '打开中' : label}</span>
           </button>
         ) : (
           <button
